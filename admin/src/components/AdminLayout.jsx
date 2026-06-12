@@ -26,7 +26,7 @@ export default function AdminLayout({ children }) {
       {/* Sidebar */}
       <aside className="w-56 bg-gray-900 text-white flex flex-col flex-shrink-0">
         <div className="p-6 border-b border-gray-700">
-          <span className="text-xl font-bold text-sky-400">LearnHub</span>
+          <span className="text-xl font-bold tracking-tight"><span className="text-white">Learn</span><span className="text-sky-400">Hub</span></span>
           <p className="text-gray-400 text-xs mt-0.5">Admin Panel</p>
         </div>
         <nav className="flex-1 p-4 space-y-1">

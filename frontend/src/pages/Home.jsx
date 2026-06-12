@@ -34,16 +34,16 @@ const WAYS = [
 ];
 
 const ACADEMIC = [
-  { name: 'Mathematics', icon: '∑', tint: 'from-blue-500 to-indigo-500' },
-  { name: 'Physics', icon: '⚛', tint: 'from-sky-500 to-blue-500' },
-  { name: 'Chemistry', icon: '⚗', tint: 'from-cyan-500 to-sky-500' },
-  { name: 'Biology', icon: '🧬', tint: 'from-teal-500 to-cyan-500' },
-  { name: 'Economics', icon: '📈', tint: 'from-blue-500 to-cyan-500' },
+  { name: 'Mathematics', desc: 'Algebra, calculus, statistics & problem solving', svgPath: 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M4 19h16a2 2 0 002-2V7a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2z' },
+  { name: 'Physics', desc: 'Mechanics, electricity, thermodynamics & optics', svgPath: 'M13 10V3L4 14h7v7l9-11h-7z' },
+  { name: 'Chemistry', desc: 'Organic, inorganic, reactions & lab technique', svgPath: 'M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z' },
+  { name: 'Biology', desc: 'Cells, genetics, ecology & human physiology', svgPath: 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z' },
+  { name: 'Economics', desc: 'Micro, macro, markets & financial literacy', svgPath: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
 ];
 const PROFESSIONAL = [
-  { name: 'UI/UX Design', icon: '🎨', tint: 'from-sky-500 to-blue-500' },
-  { name: 'Digital Marketing', icon: '📣', tint: 'from-cyan-500 to-blue-500' },
-  { name: 'AI/Prompt Engineering', icon: '🤖', tint: 'from-blue-600 to-sky-500' },
+  { name: 'UI/UX Design', desc: 'Figma, wireframes, user research & prototyping', svgPath: 'M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01' },
+  { name: 'Digital Marketing', desc: 'SEO, social media, paid ads & content strategy', svgPath: 'M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z' },
+  { name: 'AI/Prompt Engineering', desc: 'ChatGPT, prompt design, AI tools & automation', svgPath: 'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z' },
 ];
 
 const WHY = [
@@ -180,31 +180,74 @@ export default function Home() {
       </section>
 
       {/* ===== SUBJECTS ===== */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto rounded-3xl bg-slate-50 ring-1 ring-slate-100 px-6 py-12 sm:px-12">
-          <div className="text-center max-w-2xl mx-auto mb-10">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center max-w-2xl mx-auto mb-14">
             <p className="eyebrow mb-3">What you can learn</p>
-            <h2 className="font-display text-2xl sm:text-3xl font-bold">Subjects &amp; skills we offer</h2>
+            <h2 className="font-display text-3xl sm:text-4xl font-bold text-slate-900">Subjects &amp; skills we offer</h2>
+            <p className="mt-4 text-slate-500 text-lg">Expert-led content across academic and professional disciplines.</p>
           </div>
 
-          <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Academic subjects</p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-10">
-            {ACADEMIC.map((s) => (
-              <Link key={s.name} to="/courses" className="card card-hover p-5 flex flex-col items-center text-center gap-3">
-                <span className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${s.tint} flex items-center justify-center text-white text-xl shadow-lg shadow-blue-500/20`}>{s.icon}</span>
-                <span className="font-semibold text-slate-800 text-sm">{s.name}</span>
-              </Link>
-            ))}
-          </div>
+          <div className="grid md:grid-cols-2 gap-10">
+            {/* Academic */}
+            <div>
+              <p className="text-xs font-bold text-blue-600 uppercase tracking-[0.15em] mb-5 flex items-center gap-2">
+                <span className="inline-block w-6 h-px bg-blue-300" />
+                Academic Subjects
+              </p>
+              <div className="space-y-3">
+                {ACADEMIC.map((s) => (
+                  <Link key={s.name} to="/courses" className="flex items-center gap-4 p-4 bg-white rounded-xl ring-1 ring-slate-200 hover:ring-blue-300 hover:shadow-sm transition-all group">
+                    <span className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 transition-colors">
+                      <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d={s.svgPath} />
+                      </svg>
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold text-slate-900 text-sm">{s.name}</p>
+                      <p className="text-xs text-slate-500 mt-0.5 truncate">{s.desc}</p>
+                    </div>
+                    <svg className="w-4 h-4 text-slate-300 flex-shrink-0 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                  </Link>
+                ))}
+              </div>
+            </div>
 
-          <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Professional &amp; trending skills</p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {PROFESSIONAL.map((s) => (
-              <Link key={s.name} to="/courses" className="card card-hover p-5 flex items-center gap-4">
-                <span className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${s.tint} flex items-center justify-center text-white text-xl shadow-lg shadow-blue-500/20`}>{s.icon}</span>
-                <span className="font-semibold text-slate-800">{s.name}</span>
-              </Link>
-            ))}
+            {/* Professional */}
+            <div>
+              <p className="text-xs font-bold text-sky-600 uppercase tracking-[0.15em] mb-5 flex items-center gap-2">
+                <span className="inline-block w-6 h-px bg-sky-300" />
+                Professional &amp; Trending Skills
+              </p>
+              <div className="space-y-3">
+                {PROFESSIONAL.map((s) => (
+                  <Link key={s.name} to="/courses" className="flex items-center gap-4 p-4 bg-white rounded-xl ring-1 ring-slate-200 hover:ring-sky-300 hover:shadow-sm transition-all group">
+                    <span className="w-10 h-10 rounded-lg bg-sky-50 flex items-center justify-center flex-shrink-0 group-hover:bg-sky-100 transition-colors">
+                      <svg className="w-5 h-5 text-sky-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d={s.svgPath} />
+                      </svg>
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold text-slate-900 text-sm">{s.name}</p>
+                      <p className="text-xs text-slate-500 mt-0.5 truncate">{s.desc}</p>
+                    </div>
+                    <svg className="w-4 h-4 text-slate-300 flex-shrink-0 group-hover:text-sky-500 group-hover:translate-x-0.5 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                  </Link>
+                ))}
+              </div>
+
+              {/* Stats strip inside professional column */}
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                <div className="bg-white rounded-xl ring-1 ring-slate-200 p-4 text-center">
+                  <p className="font-display font-extrabold text-2xl text-blue-600">8</p>
+                  <p className="text-xs text-slate-500 mt-1">Subjects offered</p>
+                </div>
+                <div className="bg-white rounded-xl ring-1 ring-slate-200 p-4 text-center">
+                  <p className="font-display font-extrabold text-2xl text-sky-600">50+</p>
+                  <p className="text-xs text-slate-500 mt-1">Expert tutors</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
