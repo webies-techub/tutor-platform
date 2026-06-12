@@ -9,6 +9,7 @@ import LessonUpload from './pages/LessonUpload';
 import Users from './pages/Users';
 import Tutors from './pages/Tutors';
 import Bookings from './pages/Bookings';
+import GroupSessions from './pages/GroupSessions';
 import Payments from './pages/Payments';
 
 export default function App() {
@@ -26,6 +27,7 @@ export default function App() {
             <Route path="/users" element={<Users />} />
             <Route path="/tutors" element={<Tutors />} />
             <Route path="/bookings" element={<Bookings />} />
+            <Route path="/group-sessions" element={<GroupSessions />} />
             <Route path="/payments" element={<Payments />} />
           </Route>
         </Routes>

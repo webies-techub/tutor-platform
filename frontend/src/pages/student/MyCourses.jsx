@@ -18,7 +18,7 @@ export default function MyCourses() {
     <DashboardLayout title="My Courses" subtitle="All the courses in your library.">
       {loading ? (
         <div className="flex justify-center py-20">
-          <div className="w-10 h-10 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin" />
+          <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
         </div>
       ) : enrollments.length === 0 ? (
         <div className="card p-12 text-center">
@@ -35,7 +35,7 @@ export default function MyCourses() {
               <div key={e.id} className="card overflow-hidden">
                 <div className="p-6 sm:p-7 flex items-start justify-between gap-4 border-b border-slate-100">
                   <div>
-                    <span className="text-xs font-bold text-violet-600 uppercase tracking-widest">{e.course?.subject}</span>
+                    <span className="text-xs font-bold text-blue-600 uppercase tracking-widest">{e.course?.subject}</span>
                     <h2 className="font-display font-bold text-lg mt-1">{e.course?.title}</h2>
                     <p className="text-sm text-slate-400 mt-1">{lessons.length} lessons</p>
                   </div>
@@ -51,10 +51,10 @@ export default function MyCourses() {
                     <Link
                       key={lesson.id}
                       to={`/student/watch/${lesson.id}`}
-                      className="flex items-center justify-between px-6 sm:px-7 py-4 hover:bg-violet-50/50 transition-colors group"
+                      className="flex items-center justify-between px-6 sm:px-7 py-4 hover:bg-blue-50/50 transition-colors group"
                     >
                       <div className="flex items-center gap-4 min-w-0">
-                        <span className="w-9 h-9 rounded-xl bg-slate-50 ring-1 ring-slate-100 group-hover:bg-violet-100 group-hover:ring-violet-200 flex items-center justify-center text-xs font-bold text-slate-500 group-hover:text-violet-700 transition-colors flex-shrink-0">
+                        <span className="w-9 h-9 rounded-xl bg-slate-50 ring-1 ring-slate-100 group-hover:bg-blue-100 group-hover:ring-blue-200 flex items-center justify-center text-xs font-bold text-slate-500 group-hover:text-blue-700 transition-colors flex-shrink-0">
                           {i + 1}
                         </span>
                         <span className="font-medium text-slate-700 group-hover:text-slate-900 text-sm truncate">{lesson.title}</span>
@@ -63,7 +63,7 @@ export default function MyCourses() {
                         {lesson.duration > 0 && (
                           <span className="text-xs text-slate-400">{Math.floor(lesson.duration / 60)}m</span>
                         )}
-                        <span className="w-8 h-8 rounded-full bg-white ring-1 ring-slate-200 group-hover:bg-violet-600 group-hover:ring-violet-600 flex items-center justify-center transition-all">
+                        <span className="w-8 h-8 rounded-full bg-white ring-1 ring-slate-200 group-hover:bg-blue-600 group-hover:ring-blue-600 flex items-center justify-center transition-all">
                           <svg className="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M8 5v14l11-7z" />
                           </svg>

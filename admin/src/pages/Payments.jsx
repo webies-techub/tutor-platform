@@ -26,7 +26,7 @@ export default function AdminPayments() {
         <h1 className="text-2xl font-bold text-gray-900">Payments</h1>
         <div className="bg-white border border-gray-200 rounded-xl px-6 py-3 shadow-sm">
           <p className="text-xs text-gray-500">Total Revenue</p>
-          <p className="text-xl font-bold text-indigo-600">${total.toFixed(2)}</p>
+          <p className="text-xl font-bold text-sky-600">${total.toFixed(2)}</p>
         </div>
       </div>
       {loading ? (

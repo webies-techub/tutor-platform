@@ -27,6 +27,7 @@ app.use('/api/courses', require('./routes/courses'));
 app.use('/api/lessons', require('./routes/lessons'));
 app.use('/api/enrollments', require('./routes/enrollments'));
 app.use('/api/bookings', require('./routes/bookings'));
+app.use('/api/group-sessions', require('./routes/groupSessions'));
 app.use('/api/payments', require('./routes/payments'));
 app.use('/api/videos', require('./routes/videos'));
 app.use('/api/admin', require('./routes/admin'));

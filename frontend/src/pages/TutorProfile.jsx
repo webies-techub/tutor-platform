@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { mediaUrl } from '../lib/media';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -39,7 +40,7 @@ export default function TutorProfile() {
       <div className="min-h-screen flex flex-col bg-slate-50">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-10 h-10 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin" />
+          <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
         </div>
       </div>
     );
@@ -52,7 +53,7 @@ export default function TutorProfile() {
         <div className="flex-1 flex items-center justify-center text-center">
           <div>
             <h1 className="text-2xl font-bold mb-2">Tutor not found</h1>
-            <Link to="/tutors" className="text-violet-600 font-semibold hover:underline">Browse all tutors</Link>
+            <Link to="/tutors" className="text-blue-600 font-semibold hover:underline">Browse all tutors</Link>
           </div>
         </div>
       </div>
@@ -71,9 +72,9 @@ export default function TutorProfile() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex flex-col sm:flex-row sm:items-center gap-6">
             {profile.avatar_path ? (
-              <img src={`http://localhost:3001/${profile.avatar_path}`} alt="" className="w-24 h-24 rounded-3xl object-cover ring-4 ring-violet-100" />
+              <img src={mediaUrl(profile.avatar_path)} alt="" className="w-24 h-24 rounded-3xl object-cover ring-4 ring-blue-100" />
             ) : (
-              <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-4xl font-display font-bold text-white shadow-xl shadow-violet-500/25">
+              <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-blue-500 to-sky-600 flex items-center justify-center text-4xl font-display font-bold text-white shadow-xl shadow-blue-500/25">
                 {profile.user?.name?.[0]}
               </div>
             )}
@@ -87,9 +88,24 @@ export default function TutorProfile() {
                   Verified tutor
                 </span>
               </div>
-              <p className="font-display text-xl font-bold text-violet-600 mt-2">
+              {profile.headline && <p className="text-slate-500 mt-1">{profile.headline}</p>}
+              <p className="font-display text-xl font-bold text-blue-600 mt-2">
                 ${Number(profile.hourly_rate).toFixed(0)}<span className="text-slate-400 font-normal text-base">/hour</span>
               </p>
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-1 mt-2 text-sm text-slate-600">
+                {profile.qualifications && (
+                  <span className="flex items-center gap-1.5">
+                    <svg className="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5z" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 14l6.16-3.422A12.083 12.083 0 0112 21.5a12.083 12.083 0 01-6.16-10.922L12 14z" /></svg>
+                    {profile.qualifications}
+                  </span>
+                )}
+                {profile.experience_years > 0 && (
+                  <span className="flex items-center gap-1.5">
+                    <svg className="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    {profile.experience_years}+ years experience
+                  </span>
+                )}
+              </div>
               {subjectList.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-3">
                   {subjectList.map((s) => (
@@ -142,7 +158,7 @@ export default function TutorProfile() {
                   </span>
                   <h4 className="font-display font-bold mb-1">Request sent!</h4>
                   <p className="text-sm text-slate-500 mb-4">{profile.user?.name} will confirm your session shortly. You'll get an email with the meeting link.</p>
-                  <Link to="/student/my-bookings" className="text-violet-600 text-sm font-semibold hover:underline">View my bookings</Link>
+                  <Link to="/student/my-bookings" className="text-blue-600 text-sm font-semibold hover:underline">View my bookings</Link>
                 </div>
               ) : (
                 <form onSubmit={handleBook} className="space-y-4">

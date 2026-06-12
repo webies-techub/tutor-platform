@@ -13,7 +13,7 @@ const PERKS = [
 
 export default function BecomeATutor() {
   const { user } = useAuth();
-  const [form, setForm] = useState({ bio: '', subjects: '', hourly_rate: '' });
+  const [form, setForm] = useState({ headline: '', bio: '', subjects: '', qualifications: '', experience_years: '', hourly_rate: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -24,8 +24,11 @@ export default function BecomeATutor() {
     setLoading(true);
     try {
       await api.post('/tutors/apply', {
+        headline: form.headline,
         bio: form.bio,
         subjects: form.subjects,
+        qualifications: form.qualifications,
+        experience_years: parseInt(form.experience_years, 10) || 0,
         hourly_rate: parseFloat(form.hourly_rate) || 0,
       });
       setSuccess(true);
@@ -41,11 +44,11 @@ export default function BecomeATutor() {
       <Navbar />
 
       <div className="bg-slate-950 relative overflow-hidden">
-        <div className="absolute -top-24 right-1/4 w-96 h-96 bg-violet-600/20 rounded-full blur-3xl" />
+        <div className="absolute -top-24 right-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
           <h1 className="font-display text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
             Teach what you love.
-            <span className="block mt-1 bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent">Earn what you deserve.</span>
+            <span className="block mt-1 bg-gradient-to-r from-blue-400 to-sky-400 bg-clip-text text-transparent">Earn what you deserve.</span>
           </h1>
           <p className="mt-5 text-lg text-slate-300 max-w-xl mx-auto">
             Join a growing community of expert tutors helping students succeed across Australia.
@@ -59,7 +62,7 @@ export default function BecomeATutor() {
           <div className="lg:col-span-2 space-y-6">
             {PERKS.map((p, i) => (
               <div key={p.title} className="card p-6 flex gap-4">
-                <span className="w-10 h-10 rounded-xl bg-violet-50 ring-1 ring-violet-100 text-violet-600 font-display font-bold flex items-center justify-center flex-shrink-0">
+                <span className="w-10 h-10 rounded-xl bg-blue-50 ring-1 ring-blue-100 text-blue-600 font-display font-bold flex items-center justify-center flex-shrink-0">
                   {i + 1}
                 </span>
                 <div>
@@ -100,6 +103,16 @@ export default function BecomeATutor() {
                   <p className="text-sm text-slate-400 mt-1">Tell us about yourself — this is what students will see.</p>
                 </div>
                 <div>
+                  <label className="field-label">Professional headline</label>
+                  <input
+                    type="text"
+                    value={form.headline}
+                    onChange={(e) => setForm({ ...form, headline: e.target.value })}
+                    className="input-field"
+                    placeholder="e.g. PhD Physics · Former University Lecturer"
+                  />
+                </div>
+                <div>
                   <label className="field-label">Your bio</label>
                   <textarea
                     required
@@ -107,7 +120,17 @@ export default function BecomeATutor() {
                     value={form.bio}
                     onChange={(e) => setForm({ ...form, bio: e.target.value })}
                     className="input-field resize-none"
-                    placeholder="Share your qualifications, teaching experience, and what makes your sessions great..."
+                    placeholder="Share your teaching experience and what makes your sessions great..."
+                  />
+                </div>
+                <div>
+                  <label className="field-label">Qualifications</label>
+                  <input
+                    type="text"
+                    value={form.qualifications}
+                    onChange={(e) => setForm({ ...form, qualifications: e.target.value })}
+                    className="input-field"
+                    placeholder="e.g. PhD Physics (USyd), B.Sc (Hons)"
                   />
                 </div>
                 <div className="grid sm:grid-cols-2 gap-5">
@@ -124,8 +147,19 @@ export default function BecomeATutor() {
                     <p className="text-xs text-slate-400 mt-1.5">Separate with commas</p>
                   </div>
                   <div>
+                    <label className="field-label">Years of experience</label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={form.experience_years}
+                      onChange={(e) => setForm({ ...form, experience_years: e.target.value })}
+                      className="input-field"
+                      placeholder="8"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
                     <label className="field-label">Hourly rate (AUD)</label>
-                    <div className="relative">
+                    <div className="relative max-w-xs">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">$</span>
                       <input
                         type="number"

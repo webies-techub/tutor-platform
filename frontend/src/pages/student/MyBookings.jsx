@@ -24,7 +24,7 @@ export default function MyBookings() {
     <DashboardLayout title="My Bookings" subtitle="Your live tutoring sessions.">
       {loading ? (
         <div className="flex justify-center py-20">
-          <div className="w-10 h-10 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin" />
+          <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
         </div>
       ) : bookings.length === 0 ? (
         <div className="card p-12 text-center">
@@ -39,7 +39,7 @@ export default function MyBookings() {
             <div key={b.id} className="card p-6 sm:p-7">
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div className="flex items-start gap-4">
-                  <span className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-bold flex-shrink-0">
+                  <span className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-sky-600 flex items-center justify-center text-white font-bold flex-shrink-0">
                     {b.tutor?.name?.[0]}
                   </span>
                   <div>

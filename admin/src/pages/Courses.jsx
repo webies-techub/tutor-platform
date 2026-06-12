@@ -41,7 +41,7 @@ export default function AdminCourses() {
     <AdminLayout>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Courses</h1>
-        <button onClick={() => setShowForm(!showForm)} className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700">
+        <button onClick={() => setShowForm(!showForm)} className="bg-sky-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-sky-700">
           {showForm ? 'Cancel' : '+ New Course'}
         </button>
       </div>
@@ -83,7 +83,7 @@ export default function AdminCourses() {
             <textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
           </div>
           {error && <p className="text-red-500 text-sm">{error}</p>}
-          <button type="submit" className="bg-indigo-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-indigo-700">Create Course</button>
+          <button type="submit" className="bg-sky-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-sky-700">Create Course</button>
         </form>
       )}
 
@@ -115,7 +115,7 @@ export default function AdminCourses() {
                       <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${c.is_approved ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
                         {c.is_approved ? 'Approved' : 'Pending'}
                       </span>
-                      {c.is_featured && <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">Featured</span>}
+                      {c.is_featured && <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-sky-100 text-sky-700">Featured</span>}
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -123,7 +123,7 @@ export default function AdminCourses() {
                       {!c.is_approved && (
                         <button onClick={() => approve(c.id)} className="text-xs text-green-700 hover:underline font-medium">Approve</button>
                       )}
-                      <button onClick={() => feature(c.id)} className="text-xs text-indigo-600 hover:underline font-medium">
+                      <button onClick={() => feature(c.id)} className="text-xs text-sky-600 hover:underline font-medium">
                         {c.is_featured ? 'Unfeature' : 'Feature'}
                       </button>
                       <Link to={`/courses/${c.id}/lessons`} className="text-xs text-gray-600 hover:underline font-medium">Lessons</Link>

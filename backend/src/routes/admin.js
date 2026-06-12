@@ -12,6 +12,7 @@ const {
   addLesson,
   listBookings,
   listPayments,
+  listGroupSessions,
 } = require('../controllers/adminController');
 const { verifyToken } = require('../middleware/auth');
 const { requireRole } = require('../middleware/roles');
@@ -35,6 +36,7 @@ router.put('/courses/:id/feature', ...isAdmin, featureCourse);
 router.post('/lessons', ...isAdmin, uploadVideo.single('video'), addLesson);
 
 router.get('/bookings', ...isAdmin, listBookings);
+router.get('/group-sessions', ...isAdmin, listGroupSessions);
 router.get('/payments', ...isAdmin, listPayments);
 
 module.exports = router;

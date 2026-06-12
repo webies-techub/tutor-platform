@@ -1,17 +1,30 @@
 const { Op } = require('sequelize');
 const sequelize = require('../config/database');
-const { User, TutorProfile, Course, Lesson, Booking, Payment, Enrollment } = require('../models');
+const { User, TutorProfile, Course, Lesson, Booking, Payment, Enrollment, GroupSession } = require('../models');
 const { sendTutorApprovedEmail } = require('../services/email');
 
 exports.getStats = async (req, res) => {
   try {
-    const [users, courses, bookings, revenueResult] = await Promise.all([
+    const [users, courses, bookings, groupSessions, revenueResult] = await Promise.all([
       User.count(),
       Course.count(),
       Booking.count(),
+      GroupSession.count(),
       Payment.sum('amount', { where: { status: 'completed' } }),
     ]);
-    return res.json({ users, courses, bookings, revenue: revenueResult || 0 });
+    return res.json({ users, courses, bookings, groupSessions, revenue: revenueResult || 0 });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+exports.listGroupSessions = async (req, res) => {
+  try {
+    const sessions = await GroupSession.findAll({
+      include: [{ model: User, as: 'tutor', attributes: ['id', 'name'] }],
+      order: [['datetime', 'DESC']],
+    });
+    return res.json(sessions);
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }

@@ -53,7 +53,7 @@ export default function LessonUpload() {
   return (
     <AdminLayout>
       <div className="mb-4">
-        <Link to="/courses" className="text-indigo-600 hover:underline text-sm">← Back to Courses</Link>
+        <Link to="/courses" className="text-sky-600 hover:underline text-sm">← Back to Courses</Link>
       </div>
       <h1 className="text-2xl font-bold text-gray-900 mb-8">Manage Lessons (Course #{courseId})</h1>
 
@@ -82,7 +82,7 @@ export default function LessonUpload() {
             </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
             {success && <p className="text-green-600 text-sm font-medium">{success}</p>}
-            <button type="submit" disabled={uploading} className="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-semibold hover:bg-indigo-700 disabled:opacity-50 text-sm">
+            <button type="submit" disabled={uploading} className="w-full bg-sky-600 text-white py-2.5 rounded-xl font-semibold hover:bg-sky-700 disabled:opacity-50 text-sm">
               {uploading ? 'Uploading...' : 'Upload Lesson'}
             </button>
           </form>

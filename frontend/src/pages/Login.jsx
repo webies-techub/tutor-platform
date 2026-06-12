@@ -29,11 +29,11 @@ export default function Login() {
     <div className="min-h-screen grid lg:grid-cols-2">
       {/* Left panel — brand */}
       <div className="hidden lg:flex flex-col justify-between bg-slate-950 p-12 relative overflow-hidden">
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-violet-600/25 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl" />
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-blue-600/25 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-80 h-80 bg-sky-500/20 rounded-full blur-3xl" />
 
         <Link to="/" className="relative flex items-center gap-2.5">
-          <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-600/30">
+          <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-sky-600 flex items-center justify-center shadow-lg shadow-blue-600/30">
             <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
@@ -46,7 +46,7 @@ export default function Login() {
             "The video courses are brilliant and my tutor genuinely cares about my progress. Best decision I made this year."
           </blockquote>
           <div className="flex items-center gap-3 mt-6">
-            <span className="w-11 h-11 rounded-full bg-gradient-to-br from-fuchsia-500 to-violet-600 flex items-center justify-center text-white font-bold">S</span>
+            <span className="w-11 h-11 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold">S</span>
             <div>
               <p className="text-white font-semibold text-sm">Sarah K.</p>
               <p className="text-slate-400 text-sm">Year 12 student</p>
@@ -61,7 +61,7 @@ export default function Login() {
       <div className="flex items-center justify-center px-4 py-12 bg-white">
         <div className="w-full max-w-sm">
           <Link to="/" className="lg:hidden flex items-center gap-2 mb-10">
-            <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center">
+            <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-sky-600 flex items-center justify-center">
               <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
@@ -105,7 +105,7 @@ export default function Login() {
 
           <p className="text-center text-sm text-slate-500 mt-8">
             Don't have an account?{' '}
-            <Link to="/register" className="text-violet-600 font-semibold hover:underline">Sign up free</Link>
+            <Link to="/register" className="text-blue-600 font-semibold hover:underline">Sign up free</Link>
           </p>
         </div>
       </div>

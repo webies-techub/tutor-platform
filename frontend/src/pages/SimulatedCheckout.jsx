@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { mediaUrl } from '../lib/media';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import api from '../api/axios';
@@ -33,7 +34,7 @@ export default function SimulatedCheckout() {
       <div className="min-h-screen flex flex-col bg-slate-50">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-10 h-10 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin" />
+          <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
         </div>
       </div>
     );
@@ -90,7 +91,7 @@ export default function SimulatedCheckout() {
                     <input type="text" defaultValue="4242 4242 4242 4242" readOnly className="input-field !bg-slate-50 text-slate-400 font-mono" />
                     <span className="absolute right-4 top-1/2 -translate-y-1/2 flex gap-1">
                       <span className="w-7 h-5 rounded bg-gradient-to-r from-rose-500 to-amber-400 opacity-70" />
-                      <span className="w-7 h-5 rounded bg-gradient-to-r from-sky-600 to-indigo-500 opacity-70" />
+                      <span className="w-7 h-5 rounded bg-gradient-to-r from-sky-600 to-sky-500 opacity-70" />
                     </span>
                   </div>
                 </div>
@@ -135,10 +136,10 @@ export default function SimulatedCheckout() {
                 <h2 className="font-display font-bold text-lg mb-5">Order summary</h2>
                 <div className="flex gap-4 pb-5 border-b border-slate-100">
                   {course.thumbnail_path ? (
-                    <img src={`http://localhost:3001/${course.thumbnail_path}`} alt="" className="w-20 h-14 rounded-lg object-cover flex-shrink-0" />
+                    <img src={mediaUrl(course.thumbnail_path)} alt="" className="w-20 h-14 rounded-lg object-cover flex-shrink-0" />
                   ) : (
-                    <div className="w-20 h-14 rounded-lg bg-gradient-to-br from-violet-100 to-indigo-100 flex items-center justify-center flex-shrink-0">
-                      <svg className="w-5 h-5 text-violet-400" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                    <div className="w-20 h-14 rounded-lg bg-gradient-to-br from-blue-100 to-sky-100 flex items-center justify-center flex-shrink-0">
+                      <svg className="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
                     </div>
                   )}
                   <div className="min-w-0">

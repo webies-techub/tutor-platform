@@ -75,7 +75,7 @@ export default function WatchLesson() {
             <div className="w-full max-w-4xl">
               {loading ? (
                 <div className="aspect-video rounded-2xl bg-white/5 ring-1 ring-white/10 flex flex-col items-center justify-center gap-4">
-                  <div className="w-10 h-10 border-4 border-white/20 border-t-violet-500 rounded-full animate-spin" />
+                  <div className="w-10 h-10 border-4 border-white/20 border-t-blue-500 rounded-full animate-spin" />
                   <p className="text-slate-400 text-sm">Loading your lesson...</p>
                 </div>
               ) : error ? (
@@ -87,7 +87,7 @@ export default function WatchLesson() {
                       </svg>
                     </span>
                     <p className="text-white font-semibold mb-1">{error}</p>
-                    <Link to="/student/my-courses" className="text-violet-400 hover:underline text-sm">Go to My Courses</Link>
+                    <Link to="/student/my-courses" className="text-blue-400 hover:underline text-sm">Go to My Courses</Link>
                   </div>
                 </div>
               ) : (
@@ -117,12 +117,12 @@ export default function WatchLesson() {
                     to={`/student/watch/${l.id}`}
                     className={`flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm transition-colors ${
                       isCurrent
-                        ? 'bg-violet-600/20 ring-1 ring-violet-500/40 text-white'
+                        ? 'bg-blue-600/20 ring-1 ring-blue-500/40 text-white'
                         : 'text-slate-400 hover:bg-white/5 hover:text-white'
                     }`}
                   >
                     <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                      isCurrent ? 'bg-violet-600 text-white' : 'bg-white/10'
+                      isCurrent ? 'bg-blue-600 text-white' : 'bg-white/10'
                     }`}>
                       {isCurrent ? (
                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>

@@ -62,8 +62,8 @@ export default function Courses() {
               onClick={() => setSubject(s)}
               className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-150 ${
                 subject === s
-                  ? 'bg-violet-600 text-white shadow-md shadow-violet-600/25'
-                  : 'bg-white text-slate-600 border border-slate-200 hover:border-violet-300 hover:text-violet-700'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25'
+                  : 'bg-white text-slate-600 border border-slate-200 hover:border-blue-300 hover:text-blue-700'
               }`}
             >
               {s}

@@ -13,7 +13,8 @@ export default function Dashboard() {
     ? [
         { label: 'Total Users', value: stats.users },
         { label: 'Courses', value: stats.courses },
-        { label: 'Bookings', value: stats.bookings },
+        { label: '1-to-1 Bookings', value: stats.bookings },
+        { label: 'Group Classes', value: stats.groupSessions ?? 0 },
         { label: 'Revenue', value: `$${Number(stats.revenue).toFixed(2)}` },
       ]
     : [];
@@ -27,7 +28,7 @@ export default function Dashboard() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {cards.map((c) => (
             <div key={c.label} className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-              <p className="text-3xl font-bold text-indigo-600">{c.value}</p>
+              <p className="text-3xl font-bold text-sky-600">{c.value}</p>
               <p className="text-gray-500 mt-1 text-sm">{c.label}</p>
             </div>
           ))}

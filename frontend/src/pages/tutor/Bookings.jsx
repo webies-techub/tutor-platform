@@ -47,8 +47,8 @@ export default function TutorBookings() {
             onClick={() => setFilter(f)}
             className={`px-4 py-2 rounded-full text-sm font-semibold capitalize transition-all ${
               filter === f
-                ? 'bg-violet-600 text-white shadow-md shadow-violet-600/25'
-                : 'bg-white text-slate-600 border border-slate-200 hover:border-violet-300'
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25'
+                : 'bg-white text-slate-600 border border-slate-200 hover:border-blue-300'
             }`}
           >
             {f}
@@ -61,7 +61,7 @@ export default function TutorBookings() {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <div className="w-10 h-10 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin" />
+          <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="card p-12 text-center">
@@ -77,7 +77,7 @@ export default function TutorBookings() {
             <div key={b.id} className="card p-6 sm:p-7">
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div className="flex items-start gap-4 min-w-0">
-                  <span className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-bold flex-shrink-0">
+                  <span className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-sky-600 flex items-center justify-center text-white font-bold flex-shrink-0">
                     {b.student?.name?.[0]}
                   </span>
                   <div className="min-w-0">
@@ -91,7 +91,7 @@ export default function TutorBookings() {
                     </p>
                     {b.meeting_link && (
                       <p className="text-xs text-slate-400 mt-2 break-all">
-                        Meeting link: <a href={b.meeting_link} className="text-violet-600 hover:underline">{b.meeting_link}</a>
+                        Meeting link: <a href={b.meeting_link} className="text-blue-600 hover:underline">{b.meeting_link}</a>
                       </p>
                     )}
                   </div>

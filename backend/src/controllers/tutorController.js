@@ -34,7 +34,7 @@ exports.getTutor = async (req, res) => {
 
 exports.applyAsTutor = async (req, res) => {
   try {
-    const { bio, subjects, hourly_rate } = req.body;
+    const { headline, bio, subjects, qualifications, experience_years, hourly_rate } = req.body;
     const user = await User.findByPk(req.user.id);
 
     const existing = await TutorProfile.findOne({ where: { user_id: req.user.id } });
@@ -42,8 +42,11 @@ exports.applyAsTutor = async (req, res) => {
 
     const profile = await TutorProfile.create({
       user_id: req.user.id,
+      headline,
       bio,
       subjects,
+      qualifications,
+      experience_years: experience_years || 0,
       hourly_rate: hourly_rate || 0,
     });
 
@@ -63,9 +66,12 @@ exports.updateProfile = async (req, res) => {
     const profile = await TutorProfile.findOne({ where: { user_id: req.user.id } });
     if (!profile) return res.status(404).json({ message: 'Tutor profile not found' });
 
-    const { bio, subjects, hourly_rate } = req.body;
+    const { headline, bio, subjects, qualifications, experience_years, hourly_rate } = req.body;
+    if (headline !== undefined) profile.headline = headline;
     if (bio !== undefined) profile.bio = bio;
     if (subjects !== undefined) profile.subjects = subjects;
+    if (qualifications !== undefined) profile.qualifications = qualifications;
+    if (experience_years !== undefined) profile.experience_years = experience_years;
     if (hourly_rate !== undefined) profile.hourly_rate = hourly_rate;
     if (req.file) profile.avatar_path = req.file.path;
 

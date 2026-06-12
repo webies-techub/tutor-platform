@@ -78,9 +78,12 @@ async function apiLogin(request, email, password) {
 
   console.log('\n━━━ SECTION A: Public pages ━━━');
 
-  await step('Home page loads with hero', async () => {
+  await step('Home page loads with hero + key sections', async () => {
     await anonPage.goto(FRONTEND, { waitUntil: "domcontentloaded" });
-    await anonPage.waitForSelector('text=Master any subject', { timeout: 10000 });
+    await anonPage.waitForSelector('text=Study from home', { timeout: 10000 });
+    await anonPage.waitForSelector('text=Three flexible ways to learn');
+    await anonPage.waitForSelector('text=Subjects & skills we offer');
+    await anonPage.waitForSelector('text=Meet our expert tutors');
     await anonPage.screenshot({ path: path.join(SHOT_DIR, '01-home.png'), fullPage: true });
   });
 
@@ -372,6 +375,74 @@ async function apiLogin(request, email, password) {
     await sPage.goto(`${FRONTEND}/student/my-bookings`, { waitUntil: "domcontentloaded" });
     await sPage.waitForSelector('a:has-text("Join session")', { timeout: 12000 });
     await sPage.screenshot({ path: path.join(SHOT_DIR, '21-student-booking-confirmed.png') });
+  });
+
+  console.log('\n━━━ SECTION F2: Live group classes ━━━');
+
+  await step('Group classes page lists seeded sessions', async () => {
+    await anonPage.goto(`${FRONTEND}/group-classes`, { waitUntil: 'domcontentloaded' });
+    await anonPage.waitForSelector('text=Live group classes', { timeout: 10000 });
+    await anonPage.waitForSelector('button:has-text("Register")', { timeout: 10000 });
+    await anonPage.screenshot({ path: path.join(SHOT_DIR, '24-group-classes.png'), fullPage: true });
+  });
+
+  await step('Tutor creates a live group class', async () => {
+    await tPage.goto(`${FRONTEND}/tutor/group-sessions`, { waitUntil: 'domcontentloaded' });
+    await tPage.click('button:has-text("Schedule a class")');
+    await tPage.fill('input[placeholder="e.g. Calculus Problem-Solving Workshop"]', 'E2E Live Algebra Clinic');
+    await tPage.fill('input[placeholder="Mathematics"]', 'Mathematics');
+    const future = new Date(Date.now() + 6 * 24 * 3600 * 1000).toISOString().slice(0, 16);
+    await tPage.fill('input[type="datetime-local"]', future);
+    await tPage.fill('input[placeholder="19.99"]', '15');
+    await tPage.fill('textarea', 'A live problem-solving clinic created during the E2E test.');
+    await tPage.click('button:has-text("Schedule class")');
+    await tPage.waitForSelector('text=E2E Live Algebra Clinic', { timeout: 15000 });
+    await tPage.screenshot({ path: path.join(SHOT_DIR, '25-tutor-group-created.png') });
+  });
+
+  await step('Student registers for a group class (simulated payment)', async () => {
+    await sPage.goto(`${FRONTEND}/group-classes`, { waitUntil: 'domcontentloaded' });
+    await sPage.waitForSelector('button:has-text("Register")', { timeout: 10000 });
+    await sPage.locator('button:has-text("Register")').first().click();
+    await sPage.waitForSelector('text=Registered', { timeout: 15000 });
+    await sPage.screenshot({ path: path.join(SHOT_DIR, '26-group-registered.png') });
+  });
+
+  await step('Group registration API blocks double-register (409)', async () => {
+    const token = await apiLogin(anonCtx.request, STUDENT.email, STUDENT.password);
+    const list = await (await anonCtx.request.get(`${API}/group-sessions`)).json();
+    // find the session the student just registered for by trying each until 409/registered
+    let saw409 = false;
+    for (const s of list) {
+      const res = await anonCtx.request.post(`${API}/group-sessions/${s.id}/register`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.status() === 409) { saw409 = true; break; }
+      if (res.status() === 201) { /* registered another; keep checking */ }
+    }
+    if (!saw409) throw new Error('expected at least one 409 (already registered)');
+  });
+
+  await step('Student My Group Classes shows registration', async () => {
+    await sPage.goto(`${FRONTEND}/student/my-sessions`, { waitUntil: 'domcontentloaded' });
+    await sPage.waitForSelector('text=My Group Classes', { timeout: 10000 });
+    await sPage.waitForSelector('a:has-text("Join class"), text=Upcoming', { timeout: 12000 }).catch(() => {});
+    const cards = await sPage.locator('.card').count();
+    if (cards < 1) throw new Error('no registered sessions shown');
+    await sPage.screenshot({ path: path.join(SHOT_DIR, '27-my-sessions.png') });
+  });
+
+  await step('Group session API blocks unauthenticated register (401)', async () => {
+    const list = await (await anonCtx.request.get(`${API}/group-sessions`)).json();
+    const res = await anonCtx.request.post(`${API}/group-sessions/${list[0].id}/register`, {});
+    if (res.status() !== 401) throw new Error(`expected 401, got ${res.status()}`);
+  });
+
+  await step('Admin group classes page lists sessions', async () => {
+    await aPage.goto(`${ADMIN}/group-sessions`, { waitUntil: 'domcontentloaded' });
+    await aPage.waitForSelector('text=Live Group Classes', { timeout: 10000 });
+    await aPage.waitForSelector('text=E2E Live Algebra Clinic', { timeout: 10000 });
+    await aPage.screenshot({ path: path.join(SHOT_DIR, '28-admin-group-sessions.png') });
   });
 
   console.log('\n━━━ SECTION G: Admin verification ━━━');

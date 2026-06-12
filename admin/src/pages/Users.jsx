@@ -49,7 +49,7 @@ export default function AdminUsers() {
                   </td>
                   <td className="px-6 py-4">
                     {u.role !== 'admin' && (
-                      <button onClick={() => toggle(u.id)} className="text-xs text-indigo-600 hover:underline font-medium">
+                      <button onClick={() => toggle(u.id)} className="text-xs text-sky-600 hover:underline font-medium">
                         {u.is_active ? 'Deactivate' : 'Activate'}
                       </button>
                     )}

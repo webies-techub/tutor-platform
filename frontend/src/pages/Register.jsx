@@ -26,11 +26,11 @@ export default function Register() {
     <div className="min-h-screen grid lg:grid-cols-2">
       {/* Left panel — brand */}
       <div className="hidden lg:flex flex-col justify-between bg-slate-950 p-12 relative overflow-hidden">
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-violet-600/25 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl" />
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-blue-600/25 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-80 h-80 bg-sky-500/20 rounded-full blur-3xl" />
 
         <Link to="/" className="relative flex items-center gap-2.5">
-          <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-600/30">
+          <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-sky-600 flex items-center justify-center shadow-lg shadow-blue-600/30">
             <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
@@ -45,8 +45,8 @@ export default function Register() {
           <ul className="space-y-4">
             {['On-demand HD video courses', 'Live 1-on-1 tutoring sessions', 'Verified expert tutors', 'No subscriptions — pay per course'].map((item) => (
               <li key={item} className="flex items-center gap-3 text-slate-300">
-                <span className="w-6 h-6 rounded-full bg-violet-600/30 ring-1 ring-violet-500/50 flex items-center justify-center flex-shrink-0">
-                  <svg className="w-3.5 h-3.5 text-violet-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                <span className="w-6 h-6 rounded-full bg-blue-600/30 ring-1 ring-blue-500/50 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-3.5 h-3.5 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 </span>
@@ -63,7 +63,7 @@ export default function Register() {
       <div className="flex items-center justify-center px-4 py-12 bg-white">
         <div className="w-full max-w-sm">
           <Link to="/" className="lg:hidden flex items-center gap-2 mb-10">
-            <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center">
+            <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-sky-600 flex items-center justify-center">
               <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
@@ -122,11 +122,11 @@ export default function Register() {
                     onClick={() => setForm({ ...form, role: opt.value })}
                     className={`rounded-xl border-2 p-4 text-left transition-all duration-150 ${
                       form.role === opt.value
-                        ? 'border-violet-600 bg-violet-50 shadow-sm'
+                        ? 'border-blue-600 bg-blue-50 shadow-sm'
                         : 'border-slate-200 hover:border-slate-300'
                     }`}
                   >
-                    <p className={`font-display font-bold ${form.role === opt.value ? 'text-violet-700' : 'text-slate-900'}`}>
+                    <p className={`font-display font-bold ${form.role === opt.value ? 'text-blue-700' : 'text-slate-900'}`}>
                       {opt.label}
                     </p>
                     <p className="text-xs text-slate-400 mt-0.5">{opt.desc}</p>
@@ -144,7 +144,7 @@ export default function Register() {
 
           <p className="text-center text-sm text-slate-500 mt-8">
             Already have an account?{' '}
-            <Link to="/login" className="text-violet-600 font-semibold hover:underline">Log in</Link>
+            <Link to="/login" className="text-blue-600 font-semibold hover:underline">Log in</Link>
           </p>
         </div>
       </div>

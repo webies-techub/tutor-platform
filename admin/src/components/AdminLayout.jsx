@@ -7,6 +7,7 @@ const navItems = [
   { path: '/users', label: 'Users' },
   { path: '/tutors', label: 'Tutors' },
   { path: '/bookings', label: 'Bookings' },
+  { path: '/group-sessions', label: 'Group Classes' },
   { path: '/payments', label: 'Payments' },
 ];
 
@@ -25,7 +26,7 @@ export default function AdminLayout({ children }) {
       {/* Sidebar */}
       <aside className="w-56 bg-gray-900 text-white flex flex-col flex-shrink-0">
         <div className="p-6 border-b border-gray-700">
-          <span className="text-xl font-bold text-indigo-400">LearnHub</span>
+          <span className="text-xl font-bold text-sky-400">LearnHub</span>
           <p className="text-gray-400 text-xs mt-0.5">Admin Panel</p>
         </div>
         <nav className="flex-1 p-4 space-y-1">
@@ -35,7 +36,7 @@ export default function AdminLayout({ children }) {
               to={item.path}
               className={`block px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 location.pathname === item.path
-                  ? 'bg-indigo-600 text-white'
+                  ? 'bg-sky-600 text-white'
                   : 'text-gray-300 hover:bg-gray-800 hover:text-white'
               }`}
             >

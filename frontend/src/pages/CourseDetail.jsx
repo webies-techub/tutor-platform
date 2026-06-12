@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { mediaUrl } from '../lib/media';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -28,7 +29,7 @@ export default function CourseDetail() {
       <div className="min-h-screen flex flex-col bg-slate-50">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-10 h-10 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin" />
+          <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
         </div>
       </div>
     );
@@ -41,7 +42,7 @@ export default function CourseDetail() {
         <div className="flex-1 flex items-center justify-center text-center px-4">
           <div>
             <h1 className="text-2xl font-bold mb-2">Course not found</h1>
-            <Link to="/courses" className="text-violet-600 font-semibold hover:underline">Browse all courses</Link>
+            <Link to="/courses" className="text-blue-600 font-semibold hover:underline">Browse all courses</Link>
           </div>
         </div>
       </div>
@@ -56,18 +57,18 @@ export default function CourseDetail() {
 
       {/* Header band */}
       <div className="bg-slate-950 relative overflow-hidden">
-        <div className="absolute -top-24 right-0 w-96 h-96 bg-violet-600/20 rounded-full blur-3xl" />
+        <div className="absolute -top-24 right-0 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
           <div className="max-w-3xl">
             <div className="flex items-center gap-3 mb-4">
-              <span className="badge bg-violet-500/20 text-violet-300 ring-1 ring-violet-500/40 uppercase tracking-wider">{course.subject}</span>
+              <span className="badge bg-blue-500/20 text-blue-300 ring-1 ring-blue-500/40 uppercase tracking-wider">{course.subject}</span>
               <span className="badge bg-white/10 text-slate-300 ring-1 ring-white/20 capitalize">{course.type}</span>
             </div>
             <h1 className="font-display text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
               {course.title}
             </h1>
             <div className="flex items-center gap-2 mt-5">
-              <span className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold">
+              <span className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-sky-600 flex items-center justify-center text-white text-xs font-bold">
                 {course.tutor?.name?.[0]}
               </span>
               <span className="text-slate-300 text-sm">
@@ -101,7 +102,7 @@ export default function CourseDetail() {
                 {(course.lessons || []).map((lesson, i) => (
                   <div key={lesson.id} className="flex items-center justify-between px-8 py-4 hover:bg-slate-50 transition-colors">
                     <div className="flex items-center gap-4 min-w-0">
-                      <span className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold flex-shrink-0 ${enrolled ? 'bg-violet-50 text-violet-600 ring-1 ring-violet-100' : 'bg-slate-100 text-slate-400'}`}>
+                      <span className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold flex-shrink-0 ${enrolled ? 'bg-blue-50 text-blue-600 ring-1 ring-blue-100' : 'bg-slate-100 text-slate-400'}`}>
                         {enrolled ? (
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
                         ) : (
@@ -113,7 +114,7 @@ export default function CourseDetail() {
                       <div className="min-w-0">
                         <p className="text-xs text-slate-400 font-medium">Lesson {i + 1}</p>
                         {enrolled ? (
-                          <Link to={`/student/watch/${lesson.id}`} className="font-semibold text-slate-900 hover:text-violet-700 transition-colors truncate block">
+                          <Link to={`/student/watch/${lesson.id}`} className="font-semibold text-slate-900 hover:text-blue-700 transition-colors truncate block">
                             {lesson.title}
                           </Link>
                         ) : (
@@ -137,10 +138,10 @@ export default function CourseDetail() {
           <div className="lg:sticky lg:top-24 self-start">
             <div className="card overflow-hidden shadow-xl shadow-slate-200/50">
               {course.thumbnail_path ? (
-                <img src={`http://localhost:3001/${course.thumbnail_path}`} alt={course.title} className="w-full h-48 object-cover" />
+                <img src={mediaUrl(course.thumbnail_path)} alt={course.title} className="w-full h-48 object-cover" />
               ) : (
-                <div className="w-full h-48 bg-gradient-to-br from-violet-100 via-indigo-50 to-sky-100 flex items-center justify-center">
-                  <svg className="w-12 h-12 text-violet-400" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                <div className="w-full h-48 bg-gradient-to-br from-blue-100 via-sky-50 to-sky-100 flex items-center justify-center">
+                  <svg className="w-12 h-12 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
                 </div>
               )}
               <div className="p-7">
@@ -176,7 +177,7 @@ export default function CourseDetail() {
                     'Lifetime access',
                   ].map((item) => (
                     <li key={item} className="flex items-center gap-2.5">
-                      <svg className="w-4 h-4 text-violet-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <svg className="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
                       {item}

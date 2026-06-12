@@ -27,7 +27,7 @@ export default function AdminLogin() {
     <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <span className="text-3xl font-bold text-indigo-400">LearnHub</span>
+          <span className="text-3xl font-bold text-sky-400">LearnHub</span>
           <p className="text-gray-400 mt-2">Admin Panel</p>
         </div>
         <div className="bg-gray-800 border border-gray-700 rounded-2xl p-8">
@@ -40,7 +40,7 @@ export default function AdminLogin() {
                 required
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2.5 text-white text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2.5 text-white text-sm focus:ring-sky-500 focus:border-sky-500"
               />
             </div>
             <div>
@@ -57,7 +57,7 @@ export default function AdminLogin() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 text-white py-3 rounded-xl font-semibold hover:bg-indigo-700 disabled:opacity-50"
+              className="w-full bg-sky-600 text-white py-3 rounded-xl font-semibold hover:bg-sky-700 disabled:opacity-50"
             >
               {loading ? 'Signing in...' : 'Sign in'}
             </button>

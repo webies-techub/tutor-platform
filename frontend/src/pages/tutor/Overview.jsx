@@ -20,7 +20,7 @@ export default function TutorOverview() {
   const stats = [
     { label: 'Pending requests', value: pending.length, color: 'from-amber-400 to-orange-500' },
     { label: 'Confirmed sessions', value: confirmed.length, color: 'from-emerald-400 to-teal-500' },
-    { label: 'Hourly rate', value: profile ? `$${Number(profile.hourly_rate).toFixed(0)}` : '—', color: 'from-violet-500 to-indigo-600' },
+    { label: 'Hourly rate', value: profile ? `$${Number(profile.hourly_rate).toFixed(0)}` : '—', color: 'from-blue-500 to-sky-600' },
   ];
 
   return (
@@ -55,7 +55,7 @@ export default function TutorOverview() {
       {/* Pending requests preview */}
       <div className="flex items-center justify-between mb-5">
         <h2 className="font-display font-bold text-lg">Booking requests</h2>
-        <Link to="/tutor/bookings" className="text-sm text-violet-600 font-semibold hover:underline">Manage all</Link>
+        <Link to="/tutor/bookings" className="text-sm text-blue-600 font-semibold hover:underline">Manage all</Link>
       </div>
 
       {pending.length === 0 ? (
@@ -67,7 +67,7 @@ export default function TutorOverview() {
           {pending.slice(0, 3).map((b) => (
             <div key={b.id} className="card p-5 flex items-center justify-between gap-4">
               <div className="flex items-center gap-4 min-w-0">
-                <span className="w-11 h-11 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-bold flex-shrink-0">
+                <span className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-sky-600 flex items-center justify-center text-white font-bold flex-shrink-0">
                   {b.student?.name?.[0]}
                 </span>
                 <div className="min-w-0">
