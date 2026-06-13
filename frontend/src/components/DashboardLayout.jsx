@@ -47,13 +47,8 @@ export default function DashboardLayout({ title, subtitle, children }) {
       {/* Sidebar */}
       <aside className="hidden lg:flex w-64 flex-col bg-white border-r border-slate-200 fixed inset-y-0">
         <div className="h-[4.5rem] flex items-center px-6 border-b border-slate-100">
-          <Link to="/" className="flex items-center gap-2.5">
-            <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-sky-600 flex items-center justify-center shadow-lg shadow-blue-600/30">
-              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d={ICONS.courses} />
-              </svg>
-            </span>
-            <span className="text-xl font-display font-bold text-slate-900">LearnHub</span>
+          <Link to="/" className="flex items-center">
+            <img src="/learnHubLogo.png" alt="LearnHub" className="h-11 w-auto" />
           </Link>
         </div>
 
@@ -97,7 +92,9 @@ export default function DashboardLayout({ title, subtitle, children }) {
       {/* Mobile top bar */}
       <div className="lg:hidden fixed top-0 inset-x-0 z-40 bg-white/90 backdrop-blur border-b border-slate-200">
         <div className="flex items-center justify-between px-4 h-16">
-          <Link to="/" className="font-display font-bold text-lg text-slate-900">LearnHub</Link>
+          <Link to="/" className="flex items-center">
+            <img src="/learnHubLogo.png" alt="LearnHub" className="h-10 w-auto" />
+          </Link>
           <div className="flex gap-1">
             {items.map((item) => (
               <NavLink

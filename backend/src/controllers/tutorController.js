@@ -63,17 +63,19 @@ exports.applyAsTutor = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
-    const profile = await TutorProfile.findOne({ where: { user_id: req.user.id } });
-    if (!profile) return res.status(404).json({ message: 'Tutor profile not found' });
+    const [profile] = await TutorProfile.findOrCreate({
+      where: { user_id: req.user.id },
+      defaults: { user_id: req.user.id, hourly_rate: 0 },
+    });
 
     const { headline, bio, subjects, qualifications, experience_years, hourly_rate } = req.body;
     if (headline !== undefined) profile.headline = headline;
     if (bio !== undefined) profile.bio = bio;
     if (subjects !== undefined) profile.subjects = subjects;
     if (qualifications !== undefined) profile.qualifications = qualifications;
-    if (experience_years !== undefined) profile.experience_years = experience_years;
-    if (hourly_rate !== undefined) profile.hourly_rate = hourly_rate;
-    if (req.file) profile.avatar_path = req.file.path;
+    if (experience_years !== undefined) profile.experience_years = Number(experience_years) || 0;
+    if (hourly_rate !== undefined) profile.hourly_rate = Number(hourly_rate) || 0;
+    if (req.file) profile.avatar_path = `uploads/thumbnails/${req.file.filename}`;
 
     await profile.save();
     return res.json(profile);
@@ -84,8 +86,10 @@ exports.updateProfile = async (req, res) => {
 
 exports.getMyProfile = async (req, res) => {
   try {
-    const profile = await TutorProfile.findOne({ where: { user_id: req.user.id } });
-    if (!profile) return res.status(404).json({ message: 'Profile not found' });
+    const [profile] = await TutorProfile.findOrCreate({
+      where: { user_id: req.user.id },
+      defaults: { user_id: req.user.id, hourly_rate: 0 },
+    });
     return res.json(profile);
   } catch (err) {
     return res.status(500).json({ message: err.message });

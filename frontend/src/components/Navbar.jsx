@@ -5,9 +5,7 @@ import { useAuth } from '../context/AuthContext';
 function Logo() {
   return (
     <Link to="/" className="flex items-center">
-      <span className="font-display font-extrabold text-[1.35rem] tracking-tight leading-none">
-        <span className="text-slate-900">Learn</span><span className="text-blue-600">Hub</span>
-      </span>
+      <img src="/learnHubLogo.png" alt="LearnHub" className="h-11 w-auto" />
     </Link>
   );
 }
@@ -32,22 +30,22 @@ export default function Navbar() {
     { to: '/group-classes', label: 'Group Classes' },
     { to: '/tutors', label: 'Tutors' },
     { to: '/pricing', label: 'Pricing' },
-    { to: '/become-a-tutor', label: 'Teach with us' },
+    ...(!user || user.role !== 'student' ? [{ to: '/become-a-tutor', label: 'Teach with us' }] : []),
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/60">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-[4.5rem]">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-slate-100/80">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-[3.75rem]">
         <Logo />
 
-        {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-8">
+        {/* Desktop links */}
+        <div className="hidden md:flex items-center gap-7">
           {links.map((l) => (
             <NavLink
               key={l.to}
               to={l.to}
               className={({ isActive }) =>
-                `nav-link ${isActive ? 'text-blue-700 font-semibold' : ''}`
+                `text-sm font-medium transition-colors ${isActive ? 'text-blue-700 font-semibold' : 'text-slate-600 hover:text-slate-900'}`
               }
             >
               {l.label}
@@ -55,25 +53,26 @@ export default function Navbar() {
           ))}
         </div>
 
-        <div className="hidden md:flex items-center gap-3">
+        {/* Desktop CTA */}
+        <div className="hidden md:flex items-center gap-2.5">
           {user ? (
             <>
               {dashboardLink && (
-                <Link to={dashboardLink} className="btn-ghost text-sm">
+                <Link to={dashboardLink} className="text-sm font-medium text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
                   Dashboard
                 </Link>
               )}
-              <div className="flex items-center gap-3 pl-3 border-l border-slate-200">
-                <span className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-sky-600 flex items-center justify-center text-white text-sm font-bold">
+              <div className="flex items-center gap-2.5 pl-3 border-l border-slate-200">
+                <span className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-sky-600 flex items-center justify-center text-white text-xs font-bold">
                   {user.name?.[0]?.toUpperCase()}
                 </span>
-                <button onClick={handleLogout} className="nav-link">Log out</button>
+                <button onClick={handleLogout} className="text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">Log out</button>
               </div>
             </>
           ) : (
             <>
-              <Link to="/login" className="btn-ghost text-sm">Log in</Link>
-              <Link to="/register" className="btn-primary !px-5 !py-2.5 text-sm">
+              <Link to="/login" className="text-sm font-medium text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">Log in</Link>
+              <Link to="/register" className="bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-md shadow-blue-600/20 hover:bg-blue-700 transition-all">
                 Get started
               </Link>
             </>
@@ -82,43 +81,41 @@ export default function Navbar() {
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden p-2 rounded-lg hover:bg-slate-100"
+          className="md:hidden p-2 rounded-xl hover:bg-slate-100 transition-colors"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
         >
-          <svg className="w-6 h-6 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            {menuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-            )}
+          <svg className="w-5 h-5 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            {menuOpen
+              ? <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              : <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />}
           </svg>
         </button>
       </nav>
 
-      {/* Mobile menu */}
+      {/* Mobile dropdown */}
       {menuOpen && (
-        <div className="md:hidden border-t border-slate-200 bg-white px-4 py-4 space-y-1">
+        <div className="md:hidden bg-white border-t border-slate-100 px-4 py-4 space-y-1">
           {links.map((l) => (
-            <Link key={l.to} to={l.to} onClick={() => setMenuOpen(false)} className="block px-3 py-2.5 rounded-lg text-slate-700 font-medium hover:bg-slate-50">
+            <Link key={l.to} to={l.to} onClick={() => setMenuOpen(false)} className="block px-3 py-2.5 rounded-xl text-slate-700 font-medium hover:bg-slate-50 transition-colors">
               {l.label}
             </Link>
           ))}
-          <div className="pt-3 border-t border-slate-100 space-y-2">
+          <div className="pt-3 mt-1 border-t border-slate-100 space-y-2">
             {user ? (
               <>
                 {dashboardLink && (
-                  <Link to={dashboardLink} onClick={() => setMenuOpen(false)} className="block px-3 py-2.5 rounded-lg text-blue-700 font-semibold hover:bg-blue-50">
+                  <Link to={dashboardLink} onClick={() => setMenuOpen(false)} className="block px-3 py-2.5 rounded-xl text-blue-700 font-semibold hover:bg-blue-50 transition-colors">
                     Dashboard
                   </Link>
                 )}
-                <button onClick={handleLogout} className="block w-full text-left px-3 py-2.5 rounded-lg text-slate-700 font-medium hover:bg-slate-50">
+                <button onClick={handleLogout} className="block w-full text-left px-3 py-2.5 rounded-xl text-slate-700 font-medium hover:bg-slate-50 transition-colors">
                   Log out
                 </button>
               </>
             ) : (
               <>
-                <Link to="/login" onClick={() => setMenuOpen(false)} className="block px-3 py-2.5 rounded-lg text-slate-700 font-medium hover:bg-slate-50">
+                <Link to="/login" onClick={() => setMenuOpen(false)} className="block px-3 py-2.5 rounded-xl text-slate-700 font-medium hover:bg-slate-50 transition-colors">
                   Log in
                 </Link>
                 <Link to="/register" onClick={() => setMenuOpen(false)} className="btn-primary w-full text-sm">

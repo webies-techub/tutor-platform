@@ -1,5 +1,5 @@
-const { Payment, Enrollment, Course, User } = require('../models');
-const { sendEnrollmentEmail } = require('../services/email');
+const { Payment, Enrollment, Course, Booking, TutorProfile, User } = require('../models');
+const { sendEnrollmentEmail, sendBookingConfirmedEmail } = require('../services/email');
 
 exports.simulatePayment = async (req, res) => {
   try {
@@ -29,6 +29,44 @@ exports.simulatePayment = async (req, res) => {
     sendEnrollmentEmail(student, course, course.price).catch(console.error);
 
     return res.status(201).json({ payment, enrollment });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+exports.simulateBookingPayment = async (req, res) => {
+  try {
+    const { booking_id } = req.body;
+    const student_id = req.user.id;
+
+    const booking = await Booking.findByPk(booking_id, {
+      include: [
+        { model: User, as: 'tutor', attributes: ['id', 'name', 'email'],
+          include: [{ model: TutorProfile, as: 'tutorProfile', attributes: ['hourly_rate'] }] },
+      ],
+    });
+    if (!booking) return res.status(404).json({ message: 'Booking not found' });
+    if (booking.student_id !== student_id) return res.status(403).json({ message: 'Forbidden' });
+    if (booking.payment_id) return res.status(409).json({ message: 'Already paid for this booking' });
+    if (booking.status === 'cancelled') return res.status(409).json({ message: 'Booking has been cancelled' });
+
+    const amount = parseFloat(booking.tutor?.tutorProfile?.hourly_rate || 0);
+
+    const payment = await Payment.create({
+      student_id,
+      booking_id: booking.id,
+      kind: 'booking',
+      amount,
+      status: 'completed',
+    });
+
+    booking.payment_id = payment.id;
+    await booking.save();
+
+    const student = await User.findByPk(student_id);
+    sendBookingConfirmedEmail(student, booking.tutor, booking).catch(console.error);
+
+    return res.status(201).json({ payment, booking });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }

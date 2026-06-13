@@ -1,11 +1,13 @@
-const { v4: uuidv4 } = require('uuid');
-const { Booking, User } = require('../models');
+const { Booking, User, TutorProfile } = require('../models');
 const { sendNewBookingRequestEmail, sendBookingConfirmedEmail } = require('../services/email');
 
 exports.createBooking = async (req, res) => {
   try {
     const { tutor_id, subject, datetime } = req.body;
-    const tutor = await User.findOne({ where: { id: tutor_id, role: 'tutor' } });
+    const tutor = await User.findOne({
+      where: { id: tutor_id, role: 'tutor' },
+      include: [{ model: TutorProfile, as: 'tutorProfile', attributes: ['hourly_rate'] }],
+    });
     if (!tutor) return res.status(404).json({ message: 'Tutor not found' });
 
     const booking = await Booking.create({
@@ -15,10 +17,39 @@ exports.createBooking = async (req, res) => {
       datetime,
     });
 
+    // Return the booking with tutor info so the frontend can redirect to checkout
+    const result = booking.toJSON();
+    result.tutor = { id: tutor.id, name: tutor.name, hourly_rate: tutor.tutorProfile?.hourly_rate || 0 };
+
     const student = await User.findByPk(req.user.id);
     sendNewBookingRequestEmail(tutor, student, booking).catch(console.error);
 
-    return res.status(201).json(booking);
+    return res.status(201).json(result);
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+// GET /api/bookings/:id — fetch a single booking with tutor profile (for checkout page)
+exports.getBooking = async (req, res) => {
+  try {
+    const booking = await Booking.findByPk(req.params.id, {
+      include: [
+        {
+          model: User,
+          as: 'tutor',
+          attributes: ['id', 'name'],
+          include: [{ model: TutorProfile, as: 'tutorProfile', attributes: ['hourly_rate'] }],
+        },
+        { model: User, as: 'student', attributes: ['id', 'name'] },
+      ],
+    });
+    if (!booking) return res.status(404).json({ message: 'Booking not found' });
+    // Only the student or tutor involved can see it
+    if (booking.student_id !== req.user.id && booking.tutor_id !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+    return res.json(booking);
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
@@ -60,7 +91,7 @@ exports.confirmBooking = async (req, res) => {
     }
 
     booking.status = 'confirmed';
-    booking.meeting_link = `https://meet.learnhub.local/room/${uuidv4()}`;
+    booking.meeting_link = req.body.meeting_url || null;
     await booking.save();
 
     const student = await User.findByPk(booking.student_id);

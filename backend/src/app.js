@@ -30,6 +30,8 @@ app.use('/api/bookings', require('./routes/bookings'));
 app.use('/api/group-sessions', require('./routes/groupSessions'));
 app.use('/api/payments', require('./routes/payments'));
 app.use('/api/videos', require('./routes/videos'));
+app.use('/api/progress', require('./routes/progress'));
+app.use('/api/messages', require('./routes/messages'));
 app.use('/api/admin', require('./routes/admin'));
 
 app.use((err, req, res, next) => {

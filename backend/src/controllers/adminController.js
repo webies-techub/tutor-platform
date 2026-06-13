@@ -128,7 +128,7 @@ exports.createCourse = async (req, res) => {
       description,
       price: price || 0,
       type: type || 'recorded',
-      thumbnail_path: req.file ? req.file.path : null,
+      thumbnail_path: req.file ? `uploads/thumbnails/${req.file.filename}` : null,
       is_approved: true,
     });
     return res.status(201).json(course);

@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import CourseCard from '../components/CourseCard';
 import TutorCard from '../components/TutorCard';
 import api from '../api/axios';
+import { useAuth } from '../context/AuthContext';
 
 const HERO_IMG = 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&q=80&auto=format&fit=crop';
 const TUTOR_CTA_IMG = 'https://images.unsplash.com/photo-1543269865-cbf427effbad?w=1100&q=80&auto=format&fit=crop';
@@ -20,7 +21,7 @@ const WAYS = [
   {
     title: 'Live 1-to-1 Sessions',
     desc: 'Book private, individual lessons with a professional tutor. Personalised help, scheduled around you.',
-    img: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?w=700&q=80&auto=format&fit=crop',
+    img: 'https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=700&q=80&auto=format&fit=crop',
     icon: 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z',
     to: '/tutors', cta: 'Find a tutor',
   },
@@ -56,6 +57,7 @@ const WHY = [
 const fmtDate = (d) => new Date(d).toLocaleString('en-AU', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 
 export default function Home() {
+  const { user } = useAuth();
   const [featured, setFeatured] = useState([]);
   const [tutors, setTutors] = useState([]);
   const [sessions, setSessions] = useState([]);
@@ -71,24 +73,28 @@ export default function Home() {
       <Navbar />
 
       {/* ===== HERO ===== */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-sky-50 via-white to-white">
-        <div className="absolute -top-40 -left-24 w-[34rem] h-[34rem] bg-sky-200/40 rounded-full blur-3xl" />
-        <div className="absolute top-10 right-0 w-[30rem] h-[30rem] bg-blue-200/30 rounded-full blur-3xl" />
-        <div className="absolute inset-0 bg-grid [mask-image:radial-gradient(ellipse_at_top,black_30%,transparent_75%)]" />
+      <section className="relative overflow-hidden bg-white">
+        {/* Subtle dot grid */}
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(59,130,246,0.055)_1px,transparent_1px)] bg-[size:30px_30px]" />
+        {/* Soft colour washes */}
+        <div className="absolute top-0 right-0 w-[42rem] h-[36rem] bg-gradient-to-bl from-blue-50 via-sky-50/50 to-transparent" />
+        <div className="absolute bottom-0 -left-16 w-[30rem] h-[24rem] bg-gradient-to-tr from-indigo-50/60 to-transparent rounded-full" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 sm:pt-24 sm:pb-28">
           <div className="grid lg:grid-cols-2 gap-14 items-center">
             <div className="text-center lg:text-left">
-              <span className="inline-flex items-center gap-2 bg-white text-blue-700 text-sm font-semibold px-4 py-1.5 rounded-full ring-1 ring-blue-200/80 shadow-sm mb-7 animate-fade-in">
+              <span className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 text-sm font-medium px-4 py-1.5 rounded-full ring-1 ring-blue-100 mb-7 animate-fade-in">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 Tuition · Home study · Remote learning
               </span>
               <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.08] animate-fade-in-up">
-                Study from home with
-                <span className="block mt-2 text-gradient">expert tutors you can trust</span>
+                Learn from the best.
+                <span className="block mt-2 bg-gradient-to-r from-blue-600 via-blue-500 to-sky-500 bg-clip-text text-transparent">
+                  Study from home.
+                </span>
               </h1>
-              <p className="mt-6 text-lg text-slate-600 max-w-xl mx-auto lg:mx-0 leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-                Australia's friendly online tuition platform. Learn academic subjects and
+              <p className="mt-6 text-lg text-slate-500 max-w-xl mx-auto lg:mx-0 leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+                Australia's premium online tuition platform. Learn academic subjects and
                 in-demand professional skills through on-demand courses, private 1-to-1 sessions,
                 and live group classes — all from the comfort of home.
               </p>
@@ -97,12 +103,14 @@ export default function Home() {
                   Start learning
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                 </Link>
-                <Link to="/tutors" className="btn-secondary text-base !px-8 !py-4">Meet our tutors</Link>
+                <Link to="/tutors" className="inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-50 text-slate-700 font-semibold px-8 py-4 rounded-xl ring-1 ring-slate-200 shadow-sm transition-all text-base">
+                  Meet our tutors
+                </Link>
               </div>
               <div className="mt-10 flex items-center justify-center lg:justify-start gap-6 animate-fade-in" style={{ animationDelay: '0.35s' }}>
                 <div className="flex -space-x-3">
-                  {['from-blue-500 to-indigo-600', 'from-sky-500 to-blue-600', 'from-cyan-500 to-sky-600', 'from-teal-500 to-cyan-600'].map((t, i) => (
-                    <span key={i} className={`w-11 h-11 rounded-full bg-gradient-to-br ${t} ring-4 ring-white flex items-center justify-center text-white font-bold text-sm`}>{['A', 'B', 'C', 'D'][i]}</span>
+                  {['from-blue-400 to-indigo-500', 'from-sky-400 to-blue-500', 'from-cyan-400 to-sky-500', 'from-teal-400 to-cyan-500'].map((t, i) => (
+                    <span key={i} className={`w-10 h-10 rounded-full bg-gradient-to-br ${t} ring-[2.5px] ring-white flex items-center justify-center text-white font-bold text-sm`}>{['A', 'B', 'C', 'D'][i]}</span>
                   ))}
                 </div>
                 <div>
@@ -116,11 +124,12 @@ export default function Home() {
 
             {/* Hero image with floating cards */}
             <div className="relative animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-blue-300/30 ring-1 ring-slate-200/60">
-                <img src={HERO_IMG} alt="Student learning from home" className="w-full h-[26rem] object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 to-transparent" />
+              <div className="absolute inset-4 bg-blue-200/50 rounded-3xl blur-2xl" />
+              <div className="relative rounded-3xl overflow-hidden ring-1 ring-slate-200 shadow-2xl shadow-blue-900/10">
+                <img src={HERO_IMG} alt="Student learning from home" className="w-full h-[28rem] object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/15 to-transparent" />
               </div>
-              <div className="absolute -left-5 bottom-8 card px-5 py-4 shadow-xl shadow-slate-300/40 hidden sm:block">
+              <div className="absolute -left-5 bottom-8 bg-white rounded-2xl px-5 py-4 shadow-xl shadow-slate-200 ring-1 ring-slate-100 hidden sm:block">
                 <div className="flex items-center gap-3">
                   <span className="w-10 h-10 rounded-xl bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center">
                     <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
@@ -128,16 +137,17 @@ export default function Home() {
                   <div><p className="font-display font-bold text-slate-900 text-sm leading-tight">Lesson complete</p><p className="text-xs text-slate-400">Great progress today!</p></div>
                 </div>
               </div>
-              <div className="absolute -right-4 top-8 card px-4 py-3 shadow-xl shadow-slate-300/40 hidden sm:block">
+              <div className="absolute -right-4 top-8 bg-white rounded-2xl px-4 py-3 shadow-xl shadow-slate-200 ring-1 ring-slate-100 hidden sm:block">
                 <div className="flex items-center gap-2.5">
-                  <span className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-sky-600 flex items-center justify-center text-white font-bold text-sm">Mei</span>
+                  <span className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-sky-600 flex items-center justify-center text-white font-bold text-xs">Mei</span>
                   <div><p className="text-sm font-semibold text-slate-900 leading-tight">Live in 5 min</p><p className="text-[11px] text-emerald-600 font-medium flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Physics group class</p></div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="relative mt-16 border-t border-slate-200/70 pt-10 grid grid-cols-2 sm:grid-cols-4 gap-6">
+          {/* Stats strip */}
+          <div className="relative mt-16 border-t border-slate-100 pt-10 grid grid-cols-2 sm:grid-cols-4 gap-6">
             {[['500+', 'Students learning'], ['50+', 'Expert tutors'], ['8', 'Subjects offered'], ['3', 'Ways to learn']].map(([n, l]) => (
               <div key={l} className="text-center">
                 <p className="font-display text-3xl sm:text-4xl font-extrabold text-slate-900">{n}</p>
@@ -377,7 +387,7 @@ export default function Home() {
       </section>
 
       {/* ===== BECOME A TUTOR ===== */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      {(!user || user.role !== 'student') && <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto rounded-[2rem] overflow-hidden relative grid lg:grid-cols-2">
           <div className="bg-slate-950 p-10 sm:p-14 relative overflow-hidden">
             <div className="absolute -top-20 -left-10 w-72 h-72 bg-blue-600/25 rounded-full blur-3xl" />
@@ -405,7 +415,7 @@ export default function Home() {
             <img src={TUTOR_CTA_IMG} alt="Tutor teaching online" className="absolute inset-0 w-full h-full object-cover" />
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* ===== FINAL CTA ===== */}
       <section className="px-4 sm:px-6 lg:px-8 pb-24">

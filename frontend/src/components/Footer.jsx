@@ -32,9 +32,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
           <div className="col-span-2">
             <div className="mb-4">
-              <span className="font-display font-extrabold text-[1.35rem] tracking-tight leading-none">
-                <span className="text-slate-900">Learn</span><span className="text-blue-600">Hub</span>
-              </span>
+              <img src="/learnHubLogo.png" alt="LearnHub" className="h-12 w-auto" />
             </div>
             <p className="text-sm leading-relaxed max-w-xs text-slate-500">
               The online learning platform connecting students with expert tutors through

@@ -50,7 +50,7 @@ exports.createCourse = async (req, res) => {
       description,
       price: price || 0,
       type: type || 'recorded',
-      thumbnail_path: req.file ? req.file.path : null,
+      thumbnail_path: req.file ? `uploads/thumbnails/${req.file.filename}` : null,
     });
     return res.status(201).json(course);
   } catch (err) {
@@ -67,7 +67,7 @@ exports.updateCourse = async (req, res) => {
     }
     const fields = ['title', 'subject', 'description', 'price', 'type'];
     fields.forEach((f) => { if (req.body[f] !== undefined) course[f] = req.body[f]; });
-    if (req.file) course.thumbnail_path = req.file.path;
+    if (req.file) course.thumbnail_path = `uploads/thumbnails/${req.file.filename}`;
     await course.save();
     return res.json(course);
   } catch (err) {

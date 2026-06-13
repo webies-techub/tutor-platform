@@ -32,8 +32,13 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const loginWithToken = (userData, accessToken) => {
+    setAccessToken(accessToken);
+    setUser(userData);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, setUser: loginWithToken }}>
       {!loading && children}
     </AuthContext.Provider>
   );

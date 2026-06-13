@@ -5,26 +5,19 @@ import Footer from '../components/Footer';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 
+// api is still used in GroupClasses to load sessions
+
 const fmtDate = (d) => new Date(d).toLocaleString('en-AU', { dateStyle: 'full', timeStyle: 'short' });
 
-function SessionCard({ session, user, onRegistered }) {
+function SessionCard({ session, user }) {
   const navigate = useNavigate();
-  const [status, setStatus] = useState('idle'); // idle | confirm | loading | done | full | error
   const [error, setError] = useState('');
   const seatsLeft = session.capacity - session.seats_taken;
 
-  const handleRegister = async () => {
+  const handleRegister = () => {
     if (!user) return navigate('/login');
-    if (user.role !== 'student') { setError('Only students can register.'); setStatus('error'); return; }
-    setStatus('loading');
-    try {
-      await api.post(`/group-sessions/${session.id}/register`);
-      setStatus('done');
-      onRegistered?.();
-    } catch (err) {
-      if (err.response?.status === 409) { setStatus('error'); setError(err.response.data.message); }
-      else { setStatus('error'); setError(err.response?.data?.message || 'Registration failed'); }
-    }
+    if (user.role !== 'student') { setError('Only students can register.'); return; }
+    navigate(`/checkout/group/${session.id}`);
   };
 
   return (
@@ -58,13 +51,12 @@ function SessionCard({ session, user, onRegistered }) {
         ) : seatsLeft <= 0 ? (
           <button disabled className="btn-primary !px-5 !py-2.5 text-sm opacity-50 pointer-events-none">Full</button>
         ) : (
-          <button onClick={handleRegister} disabled={status === 'loading'} className="btn-primary !px-5 !py-2.5 text-sm">
-            {status === 'loading' ? 'Registering...' : 'Register'}
+          <button onClick={handleRegister} className="btn-primary !px-5 !py-2.5 text-sm">
+            Reserve seat
           </button>
         )}
       </div>
-      {status === 'error' && <p className="text-rose-600 text-xs mt-3">{error}</p>}
-      {status === 'done' && <p className="text-emerald-600 text-xs mt-3">You're in! Check your email and "My Sessions" for the join link.</p>}
+      {error && <p className="text-rose-600 text-xs mt-3">{error}</p>}
     </div>
   );
 }
@@ -102,7 +94,7 @@ export default function GroupClasses() {
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
-            {sessions.map((s) => <SessionCard key={s.id} session={s} user={user} onRegistered={load} />)}
+            {sessions.map((s) => <SessionCard key={s.id} session={s} user={user} />)}
           </div>
         )}
       </div>

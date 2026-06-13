@@ -1,31 +1,36 @@
 import { useEffect, useState, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 
 export default function WatchLesson() {
   const { lessonId } = useParams();
+  const navigate = useNavigate();
   const [videoUrl, setVideoUrl] = useState(null);
   const [error, setError] = useState('');
   const [lessonInfo, setLessonInfo] = useState(null);
   const [siblings, setSiblings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [completedIds, setCompletedIds] = useState(new Set());
+  const [marking, setMarking] = useState(false);
   const blobRef = useRef(null);
 
-  // Load lesson context (find the lesson + its course siblings from enrollments)
+  // Load lesson context + completed progress
   useEffect(() => {
-    api.get('/enrollments/mine')
-      .then(({ data }) => {
-        for (const enrollment of data) {
-          const lessons = [...(enrollment.course?.lessons || [])].sort((a, b) => a.order_index - b.order_index);
-          const match = lessons.find((l) => String(l.id) === String(lessonId));
-          if (match) {
-            setLessonInfo({ ...match, courseTitle: enrollment.course.title });
-            setSiblings(lessons);
-            break;
-          }
+    Promise.all([
+      api.get('/enrollments/mine'),
+      api.get('/progress/mine'),
+    ]).then(([{ data: enrollments }, { data: doneIds }]) => {
+      setCompletedIds(new Set(doneIds));
+      for (const enrollment of enrollments) {
+        const lessons = [...(enrollment.course?.lessons || [])].sort((a, b) => a.order_index - b.order_index);
+        const match = lessons.find((l) => String(l.id) === String(lessonId));
+        if (match) {
+          setLessonInfo({ ...match, courseTitle: enrollment.course.title });
+          setSiblings(lessons);
+          break;
         }
-      })
-      .catch(() => {});
+      }
+    }).catch(() => {});
   }, [lessonId]);
 
   useEffect(() => {
@@ -51,6 +56,27 @@ export default function WatchLesson() {
     };
   }, [lessonId]);
 
+  const handleMarkComplete = async () => {
+    if (marking) return;
+    setMarking(true);
+    try {
+      await api.post(`/progress/${lessonId}`);
+      setCompletedIds((prev) => new Set([...prev, Number(lessonId)]));
+      // Auto-navigate to next lesson if available
+      const idx = siblings.findIndex((l) => String(l.id) === String(lessonId));
+      if (idx !== -1 && idx < siblings.length - 1) {
+        navigate(`/student/watch/${siblings[idx + 1].id}`);
+      }
+    } catch {
+      // already marked or error — still update UI
+      setCompletedIds((prev) => new Set([...prev, Number(lessonId)]));
+    } finally {
+      setMarking(false);
+    }
+  };
+
+  const isCompleted = completedIds.has(Number(lessonId));
+
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col">
       {/* Top bar */}
@@ -62,9 +88,7 @@ export default function WatchLesson() {
           Back to My Courses
         </Link>
         {lessonInfo && (
-          <p className="text-slate-400 text-sm truncate ml-4 hidden sm:block">
-            {lessonInfo.courseTitle}
-          </p>
+          <p className="text-slate-400 text-sm truncate ml-4 hidden sm:block">{lessonInfo.courseTitle}</p>
         )}
       </header>
 
@@ -93,9 +117,31 @@ export default function WatchLesson() {
               ) : (
                 <video src={videoUrl} controls autoPlay className="w-full rounded-2xl bg-black shadow-2xl" style={{ maxHeight: '72vh' }} />
               )}
+
               {lessonInfo && !error && (
-                <div className="mt-5">
+                <div className="mt-5 flex items-start justify-between gap-4">
                   <h1 className="font-display text-xl font-bold text-white">{lessonInfo.title}</h1>
+                  <button
+                    onClick={handleMarkComplete}
+                    disabled={isCompleted || marking}
+                    className={`flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                      isCompleted
+                        ? 'bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/30 cursor-default'
+                        : 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/25'
+                    }`}
+                  >
+                    {isCompleted ? (
+                      <>
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                        Completed
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                        {marking ? 'Saving...' : 'Mark complete'}
+                      </>
+                    )}
+                  </button>
                 </div>
               )}
             </div>
@@ -105,27 +151,26 @@ export default function WatchLesson() {
         {/* Lesson sidebar */}
         {siblings.length > 0 && (
           <aside className="lg:w-80 border-t lg:border-t-0 lg:border-l border-white/10 p-5 flex-shrink-0">
-            <h3 className="text-white font-display font-bold text-sm uppercase tracking-wider mb-4">
-              Course content
-            </h3>
+            <h3 className="text-white font-display font-bold text-sm uppercase tracking-wider mb-4">Course content</h3>
             <div className="space-y-1.5 max-h-[60vh] overflow-y-auto pr-1">
               {siblings.map((l, i) => {
                 const isCurrent = String(l.id) === String(lessonId);
+                const done = completedIds.has(l.id);
                 return (
                   <Link
                     key={l.id}
                     to={`/student/watch/${l.id}`}
                     className={`flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm transition-colors ${
-                      isCurrent
-                        ? 'bg-blue-600/20 ring-1 ring-blue-500/40 text-white'
-                        : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                      isCurrent ? 'bg-blue-600/20 ring-1 ring-blue-500/40 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white'
                     }`}
                   >
                     <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                      isCurrent ? 'bg-blue-600 text-white' : 'bg-white/10'
+                      isCurrent ? 'bg-blue-600 text-white' : done ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/10'
                     }`}>
                       {isCurrent ? (
                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                      ) : done ? (
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                       ) : (
                         i + 1
                       )}

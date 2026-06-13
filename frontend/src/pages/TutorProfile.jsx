@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { mediaUrl } from '../lib/media';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import CourseCard from '../components/CourseCard';
@@ -9,10 +9,10 @@ import { useAuth } from '../context/AuthContext';
 
 export default function TutorProfile() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [data, setData] = useState(null);
   const [bookingForm, setBookingForm] = useState({ subject: '', datetime: '' });
-  const [booked, setBooked] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -26,11 +26,10 @@ export default function TutorProfile() {
     setError('');
     setSubmitting(true);
     try {
-      await api.post('/bookings', { tutor_id: id, ...bookingForm });
-      setBooked(true);
+      const { data: booking } = await api.post('/bookings', { tutor_id: id, ...bookingForm });
+      navigate(`/checkout/booking/${booking.id}`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to book');
-    } finally {
       setSubmitting(false);
     }
   };
@@ -149,17 +148,6 @@ export default function TutorProfile() {
                 </div>
               ) : user.role !== 'student' ? (
                 <p className="text-slate-400 text-sm text-center py-4">Only student accounts can book sessions.</p>
-              ) : booked ? (
-                <div className="text-center py-6">
-                  <span className="w-14 h-14 mx-auto rounded-full bg-emerald-50 ring-1 ring-emerald-200 flex items-center justify-center mb-4">
-                    <svg className="w-7 h-7 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </span>
-                  <h4 className="font-display font-bold mb-1">Request sent!</h4>
-                  <p className="text-sm text-slate-500 mb-4">{profile.user?.name} will confirm your session shortly. You'll get an email with the meeting link.</p>
-                  <Link to="/student/my-bookings" className="text-blue-600 text-sm font-semibold hover:underline">View my bookings</Link>
-                </div>
               ) : (
                 <form onSubmit={handleBook} className="space-y-4">
                   <div>

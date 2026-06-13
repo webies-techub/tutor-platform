@@ -10,6 +10,9 @@ const User = sequelize.define(
     password_hash: { type: DataTypes.STRING(255), allowNull: false },
     role: { type: DataTypes.ENUM('student', 'tutor', 'admin'), defaultValue: 'student' },
     is_active: { type: DataTypes.BOOLEAN, defaultValue: true },
+    email_verified: { type: DataTypes.BOOLEAN, defaultValue: true },
+    otp_code: { type: DataTypes.STRING(6), allowNull: true },
+    otp_expires_at: { type: DataTypes.DATE, allowNull: true },
   },
   { tableName: 'users', underscored: true }
 );

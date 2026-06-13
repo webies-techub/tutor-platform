@@ -14,6 +14,7 @@ const Booking = sequelize.define(
       defaultValue: 'pending',
     },
     meeting_link: { type: DataTypes.STRING(500) },
+    payment_id: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
   },
   { tableName: 'bookings', underscored: true }
 );

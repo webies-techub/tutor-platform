@@ -7,6 +7,8 @@ const Enrollment = require('./Enrollment');
 const Booking = require('./Booking');
 const GroupSession = require('./GroupSession');
 const GroupRegistration = require('./GroupRegistration');
+const LessonProgress = require('./LessonProgress');
+const Message = require('./Message');
 
 // User <-> TutorProfile
 User.hasOne(TutorProfile, { foreignKey: 'user_id', as: 'tutorProfile' });
@@ -62,6 +64,26 @@ GroupRegistration.belongsTo(User, { foreignKey: 'student_id', as: 'student' });
 GroupSession.hasMany(Payment, { foreignKey: 'session_id', as: 'payments' });
 Payment.belongsTo(GroupSession, { foreignKey: 'session_id', as: 'session' });
 
+// Booking <-> Payment (1-on-1 session payment)
+Booking.belongsTo(Payment, { foreignKey: 'payment_id', as: 'payment' });
+Payment.belongsTo(Booking, { foreignKey: 'booking_id', as: 'booking' });
+
+// Student <-> LessonProgress
+User.hasMany(LessonProgress, { foreignKey: 'student_id', as: 'lessonProgress' });
+LessonProgress.belongsTo(User, { foreignKey: 'student_id', as: 'student' });
+
+// Lesson <-> LessonProgress
+Lesson.hasMany(LessonProgress, { foreignKey: 'lesson_id', as: 'progress' });
+LessonProgress.belongsTo(Lesson, { foreignKey: 'lesson_id', as: 'lesson' });
+
+// Booking <-> Message
+Booking.hasMany(Message, { foreignKey: 'booking_id', as: 'messages' });
+Message.belongsTo(Booking, { foreignKey: 'booking_id', as: 'booking' });
+
+// User <-> Message
+User.hasMany(Message, { foreignKey: 'sender_id', as: 'sentMessages' });
+Message.belongsTo(User, { foreignKey: 'sender_id', as: 'sender' });
+
 module.exports = {
   User,
   TutorProfile,
@@ -72,4 +94,6 @@ module.exports = {
   Booking,
   GroupSession,
   GroupRegistration,
+  LessonProgress,
+  Message,
 };
