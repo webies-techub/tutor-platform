@@ -18,8 +18,8 @@ export default function AdminUsers() {
     <AdminLayout>
       <h1 className="text-2xl font-bold text-gray-900 mb-8">Users</h1>
       {loading ? <p className="text-gray-500">Loading...</p> : (
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-x-auto">
+          <table className="w-full text-sm min-w-[600px]">
             <thead className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
               <tr>
                 <th className="px-6 py-3 text-left">Name</th>

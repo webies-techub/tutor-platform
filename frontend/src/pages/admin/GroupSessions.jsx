@@ -23,8 +23,8 @@ export default function AdminGroupSessions() {
       {loading ? <p className="text-gray-500">Loading...</p> : sessions.length === 0 ? (
         <div className="bg-white border border-gray-200 rounded-2xl p-12 text-center text-gray-500">No group classes scheduled.</div>
       ) : (
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-x-auto">
+          <table className="w-full text-sm min-w-[600px]">
             <thead className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
               <tr>
                 <th className="px-6 py-3 text-left">Class</th>
