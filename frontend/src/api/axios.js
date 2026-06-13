@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const BASE = 'http://localhost:3001/api';
+// In development the Vite dev server proxies /api → localhost:3001.
+// In production the Express server serves both the API and the built frontend
+// from the same origin, so /api works without any hardcoded host.
+const BASE = '/api';
 
 const api = axios.create({
   baseURL: BASE,
@@ -25,8 +28,6 @@ api.interceptors.response.use(
   async (err) => {
     const original = err.config;
     const url = original?.url || '';
-    // Never try to refresh/redirect for the auth endpoints themselves —
-    // a 401 from /auth/refresh just means the user is anonymous.
     const isAuthCall = url.includes('/auth/refresh') || url.includes('/auth/login');
 
     if (err.response?.status === 401 && !original._retry && !isAuthCall) {
