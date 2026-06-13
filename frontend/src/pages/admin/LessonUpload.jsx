@@ -4,13 +4,15 @@ import AdminLayout from '../../components/AdminLayout';
 import api from '../../api/axios';
 
 const LESSON_TYPES = [
-  { value: 'video',    label: 'Video',        icon: '▶', hint: 'MP4, MOV, WebM — up to 500 MB' },
+  { value: 'youtube',  label: 'YouTube',      icon: '▶', hint: 'Paste a YouTube link — e.g. https://youtu.be/abc123' },
+  { value: 'video',    label: 'Upload Video', icon: '🎬', hint: 'MP4, MOV, WebM — up to 500 MB' },
   { value: 'text',     label: 'Text',         icon: '✏', hint: 'Written content, notes, or instructions' },
   { value: 'image',    label: 'Image',        icon: '🖼', hint: 'JPG, PNG, GIF — displayed inline' },
   { value: 'resource', label: 'Resource/PDF', icon: '📄', hint: 'PDF handouts or downloadable files' },
 ];
 
 const typeColor = (type) => ({
+  youtube:  'bg-red-50 text-red-600',
   video:    'bg-blue-50 text-blue-600',
   text:     'bg-green-50 text-green-600',
   image:    'bg-purple-50 text-purple-600',
@@ -37,8 +39,8 @@ function EditPanel({ lesson, onSave, onCancel }) {
       const fd = new FormData();
       fd.append('title', form.title);
       fd.append('order_index', form.order_index);
-      if (lesson.lesson_type === 'video') fd.append('duration', form.duration);
-      if (lesson.lesson_type === 'text')  fd.append('content', form.content);
+      if (lesson.lesson_type === 'video')   fd.append('duration', form.duration);
+      if (lesson.lesson_type === 'text' || lesson.lesson_type === 'youtube') fd.append('content', form.content);
       if (file) fd.append('file', file);
       await api.put(`/lessons/${lesson.id}`, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
       onSave();
@@ -91,6 +93,19 @@ function EditPanel({ lesson, onSave, onCancel }) {
         )}
       </div>
 
+      {lesson.lesson_type === 'youtube' && (
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-1">YouTube URL</label>
+          <input
+            type="url"
+            value={form.content}
+            onChange={(e) => setForm({ ...form, content: e.target.value })}
+            placeholder="https://youtu.be/abc123"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+          />
+        </div>
+      )}
+
       {lesson.lesson_type === 'text' && (
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Content</label>
@@ -103,7 +118,7 @@ function EditPanel({ lesson, onSave, onCancel }) {
         </div>
       )}
 
-      {lesson.lesson_type !== 'text' && (
+      {lesson.lesson_type !== 'text' && lesson.lesson_type !== 'youtube' && (
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">
             Replace {typeInfo?.label} file <span className="text-gray-400 font-normal">(optional)</span>
@@ -166,7 +181,8 @@ export default function LessonUpload() {
   const handleUpload = async (e) => {
     e.preventDefault();
     setError(''); setSuccess('');
-    if (lessonType !== 'text' && !file) { setError('Please select a file to upload.'); return; }
+    if (lessonType !== 'text' && lessonType !== 'youtube' && !file) { setError('Please select a file to upload.'); return; }
+    if (lessonType === 'youtube' && !form.content) { setError('Please enter a YouTube URL.'); return; }
     setUploading(true);
 
     const fd = new FormData();
@@ -177,7 +193,7 @@ export default function LessonUpload() {
     if (lessonType === 'video') {
       fd.append('duration', form.duration);
       fd.append('file', file);
-    } else if (lessonType === 'text') {
+    } else if (lessonType === 'text' || lessonType === 'youtube') {
       fd.append('content', form.content);
     } else {
       fd.append('file', file);
@@ -276,6 +292,19 @@ export default function LessonUpload() {
               )}
             </div>
 
+            {lessonType === 'youtube' && (
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">YouTube URL</label>
+                <input
+                  type="url"
+                  required
+                  value={form.content}
+                  onChange={(e) => setForm({ ...form, content: e.target.value })}
+                  placeholder="https://youtu.be/abc123 or https://www.youtube.com/watch?v=abc123"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                />
+              </div>
+            )}
             {lessonType === 'text' && (
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">Content</label>

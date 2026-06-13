@@ -5,10 +5,17 @@ import { mediaUrl } from '../../lib/media';
 
 const TYPE_ICONS = {
   video:    { label: 'Video',        cls: 'bg-blue-600/20 text-blue-400' },
+  youtube:  { label: 'Video',        cls: 'bg-red-600/20 text-red-400' },
   text:     { label: 'Reading',      cls: 'bg-green-600/20 text-green-400' },
   image:    { label: 'Image',        cls: 'bg-purple-600/20 text-purple-400' },
   resource: { label: 'Resource',     cls: 'bg-amber-600/20 text-amber-400' },
 };
+
+function getYouTubeEmbedUrl(url) {
+  if (!url) return null;
+  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/))([a-zA-Z0-9_-]{11})/);
+  return match ? `https://www.youtube.com/embed/${match[1]}?rel=0&modestbranding=1` : null;
+}
 
 function SidebarIcon({ lesson, isCurrent, done, index }) {
   const type = lesson.lesson_type || 'video';
@@ -19,6 +26,8 @@ function SidebarIcon({ lesson, isCurrent, done, index }) {
           <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
         ) : type === 'text' ? (
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+        ) : type === 'youtube' ? (
+          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
         ) : type === 'image' ? (
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
         ) : (
@@ -72,7 +81,7 @@ export default function WatchLesson() {
     }).catch(() => {});
   }, [lessonId]);
 
-  // Fetch video blob only for video lessons
+  // Fetch video blob only for uploaded video lessons (not youtube)
   useEffect(() => {
     if (lessonInfo && lessonInfo.lesson_type !== 'video') {
       setLoading(false);
@@ -174,6 +183,28 @@ export default function WatchLesson() {
       return (
         <div className="rounded-2xl overflow-hidden shadow-2xl bg-black flex items-center justify-center" style={{ maxHeight: '72vh' }}>
           <img src={src} alt={lessonInfo?.title} className="max-w-full max-h-[72vh] object-contain" />
+        </div>
+      );
+    }
+
+    if (lessonType === 'youtube') {
+      const embedUrl = getYouTubeEmbedUrl(lessonInfo?.content);
+      if (!embedUrl) {
+        return (
+          <div className="aspect-video rounded-2xl bg-white/5 ring-1 ring-white/10 flex items-center justify-center">
+            <p className="text-slate-400">Invalid YouTube URL for this lesson.</p>
+          </div>
+        );
+      }
+      return (
+        <div className="aspect-video rounded-2xl overflow-hidden shadow-2xl">
+          <iframe
+            src={embedUrl}
+            title={lessonInfo?.title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="w-full h-full"
+          />
         </div>
       );
     }

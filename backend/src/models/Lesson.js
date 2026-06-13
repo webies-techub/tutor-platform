@@ -8,7 +8,7 @@ const Lesson = sequelize.define(
     course_id: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
     title: { type: DataTypes.STRING(255), allowNull: false },
     lesson_type: {
-      type: DataTypes.ENUM('video', 'text', 'image', 'resource'),
+      type: DataTypes.ENUM('video', 'text', 'image', 'resource', 'youtube'),
       allowNull: false,
       defaultValue: 'video',
     },

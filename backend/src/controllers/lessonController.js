@@ -21,6 +21,8 @@ exports.addLesson = async (req, res) => {
       lessonData.video_path = req.file ? req.file.path : null;
     } else if (lesson_type === 'text') {
       lessonData.content = content || '';
+    } else if (lesson_type === 'youtube') {
+      lessonData.content = content || '';  // stores the YouTube URL
     } else if (lesson_type === 'image' || lesson_type === 'resource') {
       lessonData.resource_path = req.file ? `uploads/resources/${req.file.filename}` : null;
     }
