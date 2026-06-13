@@ -31,7 +31,7 @@ export default function MyCourses() {
         <div className="card p-12 text-center">
           <span className="text-5xl block mb-4">&#128218;</span>
           <h3 className="font-display font-bold text-lg mb-1">Your library is empty</h3>
-          <p className="text-slate-500 mb-6">Enrol in a course and it will appear here.</p>
+          <p className="text-slate-500 mb-6">Enroll in a course and it will appear here.</p>
           <Link to="/courses" className="btn-primary">Browse courses</Link>
         </div>
       ) : (

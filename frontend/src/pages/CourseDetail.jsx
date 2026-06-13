@@ -82,8 +82,8 @@ export default function CourseDetail() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 w-full">
         <div className="grid lg:grid-cols-3 gap-10">
           {/* Left column */}
-          <div className="lg:col-span-2 space-y-10">
-            <section className="card p-8">
+          <div className="lg:col-span-2 space-y-10 min-w-0">
+            <section className="card p-5 sm:p-8">
               <h2 className="font-display font-bold text-xl mb-4">About this course</h2>
               <p className="text-slate-600 leading-relaxed whitespace-pre-line">
                 {course.description || 'No description provided.'}
@@ -91,16 +91,16 @@ export default function CourseDetail() {
             </section>
 
             <section className="card overflow-hidden">
-              <div className="p-8 pb-4 flex items-center justify-between">
+              <div className="p-5 sm:p-8 sm:pb-4 flex items-center justify-between gap-3">
                 <h2 className="font-display font-bold text-xl">Course curriculum</h2>
-                <span className="text-sm text-slate-400 font-medium">
+                <span className="text-sm text-slate-400 font-medium flex-shrink-0 text-right">
                   {course.lessons?.length || 0} lessons
                   {totalMinutes > 0 && ` · ${Math.round(totalMinutes)} min`}
                 </span>
               </div>
               <div className="divide-y divide-slate-100">
                 {(course.lessons || []).map((lesson, i) => (
-                  <div key={lesson.id} className="flex items-center justify-between px-8 py-4 hover:bg-slate-50 transition-colors">
+                  <div key={lesson.id} className="flex items-center justify-between px-5 sm:px-8 py-4 hover:bg-slate-50 transition-colors">
                     <div className="flex items-center gap-4 min-w-0">
                       <span className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold flex-shrink-0 ${enrolled ? 'bg-blue-50 text-blue-600 ring-1 ring-blue-100' : 'bg-slate-100 text-slate-400'}`}>
                         {enrolled ? (
@@ -128,7 +128,7 @@ export default function CourseDetail() {
                   </div>
                 ))}
                 {(!course.lessons || course.lessons.length === 0) && (
-                  <p className="px-8 py-6 text-slate-400 text-sm">Lessons coming soon.</p>
+                  <p className="px-5 sm:px-8 py-6 text-slate-400 text-sm">Lessons coming soon.</p>
                 )}
               </div>
             </section>
@@ -165,9 +165,9 @@ export default function CourseDetail() {
                     Buy now
                   </Link>
                 ) : !user ? (
-                  <Link to="/login" className="btn-primary w-full text-base">Log in to enrol</Link>
+                  <Link to="/login" className="btn-primary w-full text-base">Log in to enroll</Link>
                 ) : (
-                  <p className="text-sm text-slate-400 text-center">Log in as a student to enrol.</p>
+                  <p className="text-sm text-slate-400 text-center">Log in as a student to enroll.</p>
                 )}
 
                 <ul className="mt-6 space-y-3 text-sm text-slate-600">

@@ -10,6 +10,8 @@
   }
   body {
     @apply font-sans text-slate-600 antialiased bg-white;
+    /* Safety net: never allow horizontal scroll/overflow on any page */
+    overflow-x: hidden;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-display text-slate-900;
