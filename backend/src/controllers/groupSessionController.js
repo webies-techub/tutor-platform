@@ -8,6 +8,7 @@ const {
   User,
 } = require('../models');
 const { sendGroupRegistrationEmail } = require('../services/email');
+const stripeService = require('../services/stripeService');
 
 // Public: list upcoming scheduled sessions
 exports.listSessions = async (req, res) => {
@@ -108,8 +109,9 @@ exports.getMyHostedSessions = async (req, res) => {
   }
 };
 
-// Student: register (with simulated payment) — uses a transaction + row lock for seat safety
+// Student: register (with optional Stripe payment) — uses a transaction + row lock for seat safety
 exports.registerForSession = async (req, res) => {
+  const { payment_intent_id } = req.body;
   const t = await sequelize.transaction();
   try {
     const session = await GroupSession.findByPk(req.params.id, {
@@ -133,6 +135,15 @@ exports.registerForSession = async (req, res) => {
     if (session.seats_taken >= session.capacity) {
       await t.rollback();
       return res.status(409).json({ message: 'This session is full' });
+    }
+
+    // Verify with Stripe when a PaymentIntent ID is provided (paid sessions only)
+    if (payment_intent_id && stripeService.isConfigured()) {
+      const intent = await stripeService.retrieveIntent(payment_intent_id);
+      if (intent.status !== 'succeeded') {
+        await t.rollback();
+        return res.status(400).json({ message: 'Payment not confirmed by Stripe' });
+      }
     }
 
     const payment = await Payment.create(

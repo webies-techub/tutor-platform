@@ -24,6 +24,12 @@ app.use(
   express.static(path.join(__dirname, 'uploads/thumbnails'))
 );
 
+// Lesson images and resource files (PDFs etc.) are served statically
+app.use(
+  '/uploads/resources',
+  express.static(path.join(__dirname, 'uploads/resources'))
+);
+
 // ── API routes ────────────────────────────────────────────────────────────────
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));

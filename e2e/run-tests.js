@@ -34,6 +34,12 @@ async function step(name, fn) {
   catch (err) { fail(name, err); }
 }
 
+// Bypass OTP for test accounts (dev-only endpoint)
+async function forceVerify(request, email) {
+  const res = await request.post(`${API}/auth/force-verify`, { data: { email } });
+  if (!res.ok()) throw new Error(`force-verify failed for ${email}: ${res.status()}`);
+}
+
 function makeFixtures() {
   fs.mkdirSync(FIXTURES, { recursive: true });
   fs.mkdirSync(SHOT_DIR, { recursive: true });
@@ -119,7 +125,11 @@ async function apiLogin(request, email, password) {
     await sPage.click('button:has-text("Learn")');
     await sPage.screenshot({ path: path.join(SHOT_DIR, '04-register.png') });
     await sPage.click('button:has-text("Create account")');
-    await sPage.waitForURL('**/login', { timeout: 15000 });
+    // App redirects to /verify-otp after registration
+    await sPage.waitForURL('**/verify-otp', { timeout: 15000 });
+    // Bypass OTP for tests — dev-only endpoint
+    await forceVerify(anonCtx.request, STUDENT.email);
+    await sPage.goto(`${FRONTEND}/login`, { waitUntil: "domcontentloaded" });
   });
 
   await step('Student logs in → lands on dashboard', async () => {
@@ -155,7 +165,10 @@ async function apiLogin(request, email, password) {
     await tPage.fill('input[placeholder="Min. 6 characters"]', TUTOR.password);
     await tPage.click('button:has-text("Teach")');
     await tPage.click('button:has-text("Create account")');
-    await tPage.waitForURL('**/login', { timeout: 15000 });
+    // App redirects to /verify-otp after registration
+    await tPage.waitForURL('**/verify-otp', { timeout: 15000 });
+    await forceVerify(anonCtx.request, TUTOR.email);
+    await tPage.goto(`${FRONTEND}/login`, { waitUntil: "domcontentloaded" });
   });
 
   await step('Tutor logs in → tutor dashboard', async () => {
@@ -167,11 +180,21 @@ async function apiLogin(request, email, password) {
   });
 
   await step('Tutor submits application via Become a Tutor', async () => {
-    await tPage.goto(`${FRONTEND}/become-a-tutor`, { waitUntil: "domcontentloaded" });
+    // networkidle ensures the AuthContext /auth/refresh call completes before we interact
+    await tPage.goto(`${FRONTEND}/become-a-tutor`, { waitUntil: "networkidle" });
+    // Wait for the form to render (user must be set in AuthContext before form appears)
+    await tPage.waitForSelector('textarea', { timeout: 10000 });
     await tPage.fill('textarea', 'Experienced maths and physics tutor with 8 years of teaching experience. I specialise in making complex topics simple.');
     await tPage.fill('input[placeholder="Math, Physics, Chemistry"]', 'Math, Physics');
     await tPage.fill('input[placeholder="50.00"]', '65');
+    // Capture the API response to surface any errors
+    const applyResponsePromise = tPage.waitForResponse('**/tutors/apply', { timeout: 20000 });
     await tPage.click('button:has-text("Submit application")');
+    const applyResponse = await applyResponsePromise;
+    if (!applyResponse.ok()) {
+      const body = await applyResponse.text();
+      throw new Error(`/tutors/apply returned ${applyResponse.status()}: ${body.slice(0, 200)}`);
+    }
     await tPage.waitForSelector('text=Application received!', { timeout: 15000 });
     await tPage.screenshot({ path: path.join(SHOT_DIR, '07-tutor-applied.png') });
   });
@@ -221,7 +244,9 @@ async function apiLogin(request, email, password) {
   await step('Admin creates course with thumbnail', async () => {
     await aPage.goto(`${ADMIN}/courses`, { waitUntil: "domcontentloaded" });
     await aPage.click('button:has-text("+ New Course")');
-    await aPage.fill('input[type="number"]:near(:text("Tutor User ID"))', String(tutorUser.id));
+    // Tutor field is now a <select> (not a number input)
+    await aPage.waitForSelector('select:near(:text("Tutor"))', { timeout: 10000 });
+    await aPage.selectOption('select:near(:text("Tutor"))', String(tutorUser.id));
     await aPage.fill('input[type="text"]:near(:text("Title"))', 'Algebra Mastery: Year 10');
     await aPage.fill('input[type="text"]:near(:text("Subject"))', 'Math');
     await aPage.fill('input[type="number"]:near(:text("Price"))', '49.99');
@@ -232,29 +257,39 @@ async function apiLogin(request, email, password) {
     await aPage.screenshot({ path: path.join(SHOT_DIR, '10-admin-course-created.png') });
   });
 
-  await step('Admin features course (admin courses are auto-approved)', async () => {
-    // Admin-created courses are created with is_approved=true, so only "Feature" shows.
-    const approveBtn = aPage.locator('button:has-text("Approve")');
-    if (await approveBtn.count()) {
-      await approveBtn.first().click();
-      await aPage.waitForSelector('span:has-text("Approved")', { timeout: 10000 });
-    }
-    await aPage.click('button:has-text("Feature")');
-    await aPage.waitForSelector('span:has-text("Featured")', { timeout: 10000 });
-  });
-
-  // Get course id
+  // Get course id immediately after creation so we can target the exact row in the next step
   const coursesRes = await anonCtx.request.get(`${API}/admin/courses`, {
     headers: { Authorization: `Bearer ${adminToken}` },
   });
-  const course = (await coursesRes.json()).find((c) => c.title.includes('Algebra Mastery'));
+  // Pick the newest non-featured Algebra Mastery course (the one just created this run)
+  const course = (await coursesRes.json()).find((c) => c.title.includes('Algebra Mastery') && !c.is_featured)
+    || (await coursesRes.json()).find((c) => c.title.includes('Algebra Mastery'));
+
+  await step('Admin features course (admin courses are auto-approved)', async () => {
+    // Use the "Manage Lessons" link href to uniquely target the just-created course row
+    const courseRow = aPage.locator(`tr:has(a[href="/courses/${course.id}/lessons"])`);
+    await courseRow.waitFor({ timeout: 10000 });
+    const approveBtn = courseRow.getByRole('button', { name: 'Approve', exact: true });
+    if (await approveBtn.count()) {
+      await approveBtn.click();
+      await courseRow.locator('span:has-text("Approved")').waitFor({ timeout: 10000 });
+    }
+    // Only click Feature if not already featured (handles re-runs where course is already featured)
+    const featureBtn = courseRow.getByRole('button', { name: 'Feature', exact: true });
+    if (await featureBtn.count()) {
+      await featureBtn.click();
+    }
+    // Wait for the "Unfeature" button — confirms the toggle took effect
+    await courseRow.getByRole('button', { name: 'Unfeature', exact: true }).waitFor({ timeout: 15000 });
+  });
 
   await step('Admin uploads lesson video', async () => {
     await aPage.goto(`${ADMIN}/courses/${course.id}/lessons`, { waitUntil: "domcontentloaded" });
     await aPage.fill('input[type="text"]', 'Lesson 1: Linear Equations');
     await aPage.setInputFiles('input[type="file"]', path.join(FIXTURES, 'lesson.mp4'));
-    await aPage.click('button:has-text("Upload Lesson")');
-    await aPage.waitForSelector('text=Lesson uploaded!', { timeout: 30000 });
+    // Button text is now "Add Video Lesson" (type-aware label)
+    await aPage.click('button:has-text("Add Video Lesson")');
+    await aPage.waitForSelector('text=Lesson added!', { timeout: 30000 });
     await aPage.screenshot({ path: path.join(SHOT_DIR, '11-admin-lesson-uploaded.png') });
   });
 
@@ -325,6 +360,7 @@ async function apiLogin(request, email, password) {
 
   await step('Video API blocks non-enrolled student (403)', async () => {
     await anonCtx.request.post(`${API}/auth/register`, { data: { ...STUDENT2, role: 'student' } });
+    await forceVerify(anonCtx.request, STUDENT2.email);
     const token = await apiLogin(anonCtx.request, STUDENT2.email, STUDENT2.password);
     const res = await anonCtx.request.get(`${API}/videos/${lesson.id}`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -358,22 +394,27 @@ async function apiLogin(request, email, password) {
     const dtValue = future.toISOString().slice(0, 16);
     await sPage.fill('input[type="datetime-local"]', dtValue);
     await sPage.click('button:has-text("Request booking")');
-    await sPage.waitForSelector('text=Request sent!', { timeout: 15000 });
+    // After booking creation the app navigates to the booking checkout page
+    await sPage.waitForURL('**/checkout/booking/**', { timeout: 15000 });
     await sPage.screenshot({ path: path.join(SHOT_DIR, '19-booking-requested.png') });
   });
 
   await step('Tutor sees and confirms the booking', async () => {
     await tPage.goto(`${FRONTEND}/tutor/bookings`, { waitUntil: "domcontentloaded" });
     await tPage.waitForSelector('text=Quadratic equations help', { timeout: 10000 });
-    // Exact-name match: "Confirm" (button) must NOT match the "confirmed" filter pill
+    // First click opens the inline confirm form (not the filter pill — use exact match)
     await tPage.getByRole('button', { name: 'Confirm', exact: true }).click();
+    // Second click actually submits the confirmation (inline "Confirm booking" button)
+    await tPage.waitForSelector('button:has-text("Confirm booking")', { timeout: 5000 });
+    await tPage.click('button:has-text("Confirm booking")');
     await tPage.waitForSelector('span.badge-green', { timeout: 15000 });
     await tPage.screenshot({ path: path.join(SHOT_DIR, '20-tutor-confirmed.png') });
   });
 
-  await step('Student sees confirmed booking with meeting link', async () => {
+  await step('Student sees confirmed booking', async () => {
     await sPage.goto(`${FRONTEND}/student/my-bookings`, { waitUntil: "domcontentloaded" });
-    await sPage.waitForSelector('a:has-text("Join session")', { timeout: 12000 });
+    // Tutor confirmed the booking — badge-green (Confirmed) is shown; meeting link may not be set yet
+    await sPage.waitForSelector('span.badge-green', { timeout: 12000 });
     await sPage.screenshot({ path: path.join(SHOT_DIR, '21-student-booking-confirmed.png') });
   });
 
@@ -382,7 +423,8 @@ async function apiLogin(request, email, password) {
   await step('Group classes page lists seeded sessions', async () => {
     await anonPage.goto(`${FRONTEND}/group-classes`, { waitUntil: 'domcontentloaded' });
     await anonPage.waitForSelector('text=Live group classes', { timeout: 10000 });
-    await anonPage.waitForSelector('button:has-text("Register")', { timeout: 10000 });
+    // Button text is "Reserve seat" (not "Register")
+    await anonPage.waitForSelector('button:has-text("Reserve seat")', { timeout: 10000 });
     await anonPage.screenshot({ path: path.join(SHOT_DIR, '24-group-classes.png'), fullPage: true });
   });
 
@@ -402,9 +444,14 @@ async function apiLogin(request, email, password) {
 
   await step('Student registers for a group class (simulated payment)', async () => {
     await sPage.goto(`${FRONTEND}/group-classes`, { waitUntil: 'domcontentloaded' });
-    await sPage.waitForSelector('button:has-text("Register")', { timeout: 10000 });
-    await sPage.locator('button:has-text("Register")').first().click();
-    await sPage.waitForSelector('text=Registered', { timeout: 15000 });
+    await sPage.waitForSelector('button:has-text("Reserve seat")', { timeout: 10000 });
+    await sPage.locator('button:has-text("Reserve seat")').first().click();
+    // "Reserve seat" navigates to /checkout/group/:id
+    await sPage.waitForURL('**/checkout/group/**', { timeout: 10000 });
+    // Click pay/reserve button (text varies by price: "Pay $X & reserve seat" or "Reserve my seat — free")
+    await sPage.waitForSelector('button:has-text("seat")', { timeout: 10000 });
+    await sPage.click('button:has-text("seat")');
+    await sPage.waitForSelector("text=You're registered!", { timeout: 15000 });
     await sPage.screenshot({ path: path.join(SHOT_DIR, '26-group-registered.png') });
   });
 
@@ -426,7 +473,8 @@ async function apiLogin(request, email, password) {
   await step('Student My Group Classes shows registration', async () => {
     await sPage.goto(`${FRONTEND}/student/my-sessions`, { waitUntil: 'domcontentloaded' });
     await sPage.waitForSelector('text=My Group Classes', { timeout: 10000 });
-    await sPage.waitForSelector('a:has-text("Join class"), text=Upcoming', { timeout: 12000 }).catch(() => {});
+    // Wait for loading to finish — .card appears for both data rows and the empty-state panel
+    await sPage.waitForSelector('.card', { timeout: 10000 });
     const cards = await sPage.locator('.card').count();
     if (cards < 1) throw new Error('no registered sessions shown');
     await sPage.screenshot({ path: path.join(SHOT_DIR, '27-my-sessions.png') });

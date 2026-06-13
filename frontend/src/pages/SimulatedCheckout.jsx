@@ -3,31 +3,99 @@ import { mediaUrl } from '../lib/media';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import api from '../api/axios';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import StripeForm from '../components/StripeForm';
 
+const STRIPE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+const stripePromise = STRIPE_KEY ? loadStripe(STRIPE_KEY) : null;
+
+// ── Stripe payment form ───────────────────────────────────────────────────────
+function StripeCheckoutForm({ courseId, price, onSuccess }) {
+  const handleSuccess = async (paymentIntentId) => {
+    await api.post('/payments/simulate', { course_id: Number(courseId), payment_intent_id: paymentIntentId });
+    onSuccess();
+  };
+  return <StripeForm onSuccess={handleSuccess} label={`Pay $${Number(price).toFixed(2)}`} />;
+}
+
+// ── Legacy simulated form (no Stripe key) ─────────────────────────────────────
+function LegacyForm({ courseId, price, onSuccess, onAlreadyEnrolled }) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handlePay = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      await api.post('/payments/simulate', { course_id: Number(courseId) });
+      onSuccess();
+    } catch (err) {
+      if (err.response?.status === 409) {
+        onAlreadyEnrolled();
+      } else {
+        setError(err.response?.data?.message || 'Payment failed');
+        setLoading(false);
+      }
+    }
+  };
+
+  return (
+    <div className="space-y-5">
+      <div>
+        <label className="field-label">Card number</label>
+        <div className="relative">
+          <input type="text" defaultValue="4242 4242 4242 4242" readOnly className="input-field !bg-slate-50 text-slate-400 font-mono" />
+          <span className="absolute right-4 top-1/2 -translate-y-1/2 flex gap-1">
+            <span className="w-7 h-5 rounded bg-gradient-to-r from-rose-500 to-amber-400 opacity-70" />
+            <span className="w-7 h-5 rounded bg-gradient-to-r from-sky-600 to-sky-500 opacity-70" />
+          </span>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-5">
+        <div>
+          <label className="field-label">Expiry date</label>
+          <input type="text" defaultValue="12/28" readOnly className="input-field !bg-slate-50 text-slate-400 font-mono" />
+        </div>
+        <div>
+          <label className="field-label">CVC</label>
+          <input type="text" defaultValue="123" readOnly className="input-field !bg-slate-50 text-slate-400 font-mono" />
+        </div>
+      </div>
+      {error && <p className="text-rose-600 text-sm font-medium bg-rose-50 rounded-xl px-4 py-3 ring-1 ring-rose-100">{error}</p>}
+      <button onClick={handlePay} disabled={loading} className="btn-primary w-full text-base !py-4 mt-2">
+        {loading ? (
+          <><span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />Processing...</>
+        ) : (
+          <>Pay ${Number(price).toFixed(2)}</>
+        )}
+      </button>
+      <p className="text-xs text-slate-400 text-center">This is a demo checkout. No real payment will be processed.</p>
+    </div>
+  );
+}
+
+// ── Main page ─────────────────────────────────────────────────────────────────
 export default function SimulatedCheckout() {
   const { courseId } = useParams();
   const [course, setCourse] = useState(null);
-  const [status, setStatus] = useState('idle');
-  const [error, setError] = useState('');
+  const [clientSecret, setClientSecret] = useState(null);
+  const [status, setStatus] = useState('idle'); // idle | success | alreadyEnrolled
 
   useEffect(() => {
     api.get(`/courses/${courseId}`).then(({ data }) => setCourse(data)).catch(() => {});
   }, [courseId]);
 
-  const handlePay = async () => {
-    setStatus('loading');
-    try {
-      await api.post('/payments/simulate', { course_id: Number(courseId) });
-      setStatus('success');
-    } catch (err) {
-      if (err.response?.status === 409) {
-        setStatus('alreadyEnrolled');
-      } else {
-        setError(err.response?.data?.message || 'Payment failed');
-        setStatus('error');
-      }
-    }
-  };
+  // When Stripe is configured, create a PaymentIntent as soon as the course loads
+  useEffect(() => {
+    if (!STRIPE_KEY || !course) return;
+    api
+      .post('/payments/create-intent', { type: 'course', reference_id: Number(courseId) })
+      .then(({ data }) => setClientSecret(data.clientSecret))
+      .catch((err) => {
+        if (err.response?.status === 409) setStatus('alreadyEnrolled');
+      });
+  }, [course, courseId]);
 
   if (!course) {
     return (
@@ -40,12 +108,18 @@ export default function SimulatedCheckout() {
     );
   }
 
+  const isStripeMode = Boolean(STRIPE_KEY);
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <Navbar />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-14 flex-1 w-full">
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mb-2">Checkout</h1>
-        <p className="text-slate-500 mb-10">Secure simulated payment — no real charge will be made.</p>
+        <p className="text-slate-500 mb-10">
+          {isStripeMode
+            ? 'Secure payment powered by Stripe — use test card 4242 4242 4242 4242.'
+            : 'Secure simulated payment — no real charge will be made.'}
+        </p>
 
         {status === 'success' ? (
           <div className="card max-w-lg mx-auto p-12 text-center shadow-xl shadow-slate-200/50">
@@ -59,9 +133,7 @@ export default function SimulatedCheckout() {
               You're now enrolled in <strong className="text-slate-700">{course.title}</strong>.
               A confirmation email is on its way.
             </p>
-            <Link to="/student/my-courses" className="btn-primary w-full text-base">
-              Start learning now
-            </Link>
+            <Link to="/student/my-courses" className="btn-primary w-full text-base">Start learning now</Link>
           </div>
         ) : status === 'alreadyEnrolled' ? (
           <div className="card max-w-lg mx-auto p-12 text-center">
@@ -80,54 +152,28 @@ export default function SimulatedCheckout() {
                   <svg className="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
-                  Simulated &amp; secure
+                  {isStripeMode ? 'Powered by Stripe' : 'Simulated & secure'}
                 </div>
               </div>
 
-              <div className="space-y-5">
-                <div>
-                  <label className="field-label">Card number</label>
-                  <div className="relative">
-                    <input type="text" defaultValue="4242 4242 4242 4242" readOnly className="input-field !bg-slate-50 text-slate-400 font-mono" />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 flex gap-1">
-                      <span className="w-7 h-5 rounded bg-gradient-to-r from-rose-500 to-amber-400 opacity-70" />
-                      <span className="w-7 h-5 rounded bg-gradient-to-r from-sky-600 to-sky-500 opacity-70" />
-                    </span>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-5">
-                  <div>
-                    <label className="field-label">Expiry date</label>
-                    <input type="text" defaultValue="12/28" readOnly className="input-field !bg-slate-50 text-slate-400 font-mono" />
-                  </div>
-                  <div>
-                    <label className="field-label">CVC</label>
-                    <input type="text" defaultValue="123" readOnly className="input-field !bg-slate-50 text-slate-400 font-mono" />
-                  </div>
-                </div>
-              </div>
-
-              {status === 'error' && (
-                <p className="mt-5 text-rose-600 text-sm font-medium bg-rose-50 rounded-xl px-4 py-3 ring-1 ring-rose-100">{error}</p>
-              )}
-
-              <button
-                onClick={handlePay}
-                disabled={status === 'loading'}
-                className="btn-primary w-full text-base !py-4 mt-7"
-              >
-                {status === 'loading' ? (
-                  <>
-                    <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                    Processing...
-                  </>
+              {isStripeMode ? (
+                clientSecret ? (
+                  <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'stripe' } }}>
+                    <StripeCheckoutForm courseId={courseId} price={course.price} onSuccess={() => setStatus('success')} />
+                  </Elements>
                 ) : (
-                  <>Pay ${Number(course.price).toFixed(2)}</>
-                )}
-              </button>
-              <p className="text-xs text-slate-400 text-center mt-4">
-                This is a demo checkout. No real payment will be processed.
-              </p>
+                  <div className="h-24 flex items-center justify-center">
+                    <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+                  </div>
+                )
+              ) : (
+                <LegacyForm
+                  courseId={courseId}
+                  price={course.price}
+                  onSuccess={() => setStatus('success')}
+                  onAlreadyEnrolled={() => setStatus('alreadyEnrolled')}
+                />
+              )}
             </div>
 
             {/* Order summary */}
@@ -148,14 +194,8 @@ export default function SimulatedCheckout() {
                   </div>
                 </div>
                 <div className="py-4 space-y-2.5 text-sm border-b border-slate-100">
-                  <div className="flex justify-between text-slate-500">
-                    <span>Subtotal</span>
-                    <span>${Number(course.price).toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-slate-500">
-                    <span>Taxes</span>
-                    <span>$0.00</span>
-                  </div>
+                  <div className="flex justify-between text-slate-500"><span>Subtotal</span><span>${Number(course.price).toFixed(2)}</span></div>
+                  <div className="flex justify-between text-slate-500"><span>Taxes</span><span>$0.00</span></div>
                 </div>
                 <div className="flex justify-between items-baseline pt-4">
                   <span className="font-display font-bold">Total</span>

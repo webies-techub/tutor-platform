@@ -12,7 +12,7 @@ exports.getMyEnrollments = async (req, res) => {
             {
               model: Lesson,
               as: 'lessons',
-              attributes: ['id', 'title', 'duration', 'order_index'],
+              attributes: ['id', 'title', 'duration', 'order_index', 'lesson_type', 'content', 'resource_path'],
               order: [['order_index', 'ASC']],
             },
           ],

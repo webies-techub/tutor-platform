@@ -16,7 +16,7 @@ const {
 } = require('../controllers/adminController');
 const { verifyToken } = require('../middleware/auth');
 const { requireRole } = require('../middleware/roles');
-const { uploadThumbnail, uploadVideo } = require('../middleware/upload');
+const { uploadThumbnail, uploadLessonFile } = require('../middleware/upload');
 
 const isAdmin = [verifyToken, requireRole('admin')];
 
@@ -33,7 +33,7 @@ router.post('/courses', ...isAdmin, uploadThumbnail.single('thumbnail'), createC
 router.put('/courses/:id/approve', ...isAdmin, approveCourse);
 router.put('/courses/:id/feature', ...isAdmin, featureCourse);
 
-router.post('/lessons', ...isAdmin, uploadVideo.single('video'), addLesson);
+router.post('/lessons', ...isAdmin, uploadLessonFile.single('file'), addLesson);
 
 router.get('/bookings', ...isAdmin, listBookings);
 router.get('/group-sessions', ...isAdmin, listGroupSessions);

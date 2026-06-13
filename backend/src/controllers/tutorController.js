@@ -38,17 +38,25 @@ exports.applyAsTutor = async (req, res) => {
     const user = await User.findByPk(req.user.id);
 
     const existing = await TutorProfile.findOne({ where: { user_id: req.user.id } });
-    if (existing) return res.status(409).json({ message: 'Application already submitted' });
+    // A profile with a bio means the tutor already intentionally submitted an application
+    if (existing && existing.bio) return res.status(409).json({ message: 'Application already submitted' });
 
-    const profile = await TutorProfile.create({
-      user_id: req.user.id,
-      headline,
-      bio,
-      subjects,
-      qualifications,
-      experience_years: experience_years || 0,
-      hourly_rate: hourly_rate || 0,
-    });
+    let profile;
+    if (existing) {
+      // Auto-created empty profile (via getMyProfile findOrCreate) — fill it in
+      await existing.update({ headline, bio, subjects, qualifications, experience_years: experience_years || 0, hourly_rate: hourly_rate || 0 });
+      profile = existing;
+    } else {
+      profile = await TutorProfile.create({
+        user_id: req.user.id,
+        headline,
+        bio,
+        subjects,
+        qualifications,
+        experience_years: experience_years || 0,
+        hourly_rate: hourly_rate || 0,
+      });
+    }
 
     user.role = 'tutor';
     await user.save();

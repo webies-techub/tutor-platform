@@ -139,14 +139,25 @@ exports.createCourse = async (req, res) => {
 
 exports.addLesson = async (req, res) => {
   try {
-    const { course_id, title, order_index, duration } = req.body;
-    const lesson = await Lesson.create({
+    const { course_id, title, order_index, duration, lesson_type = 'video', content } = req.body;
+
+    const lessonData = {
       course_id,
       title,
-      video_path: req.file ? req.file.path : null,
+      lesson_type,
       order_index: order_index || 0,
-      duration: duration || 0,
-    });
+      duration: lesson_type === 'video' ? (duration || 0) : 0,
+    };
+
+    if (lesson_type === 'video') {
+      lessonData.video_path = req.file ? req.file.path : null;
+    } else if (lesson_type === 'text') {
+      lessonData.content = content || '';
+    } else if (lesson_type === 'image' || lesson_type === 'resource') {
+      lessonData.resource_path = req.file ? `uploads/resources/${req.file.filename}` : null;
+    }
+
+    const lesson = await Lesson.create(lessonData);
     return res.status(201).json(lesson);
   } catch (err) {
     return res.status(500).json({ message: err.message });

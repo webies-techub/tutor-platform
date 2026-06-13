@@ -70,3 +70,6 @@
     background-size: 22px 22px;
   }
 }
+
+/* Hide Stripe's auto-injected "Powered by Stripe" badge */
+#stripe-badge-root { display: none !important; }

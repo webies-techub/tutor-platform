@@ -1,17 +1,94 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import api from '../api/axios';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import StripeForm from '../components/StripeForm';
+
+const STRIPE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+const stripePromise = STRIPE_KEY ? loadStripe(STRIPE_KEY) : null;
 
 const fmtDate = (d) =>
   new Date(d).toLocaleString('en-AU', { dateStyle: 'full', timeStyle: 'short' });
 
+// ── Legacy simulated form ─────────────────────────────────────────────────────
+function LegacyForm({ bookingId, hourlyRate, onSuccess }) {
+  const [paying, setPaying] = useState(false);
+  const [error, setError] = useState('');
+
+  const handlePay = async (e) => {
+    e.preventDefault();
+    setPaying(true);
+    setError('');
+    try {
+      await api.post('/payments/simulate-booking', { booking_id: Number(bookingId) });
+      onSuccess();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Payment failed. Please try again.');
+      setPaying(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handlePay} className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-slate-700 mb-1.5">Cardholder name</label>
+        <input type="text" defaultValue="Test User" readOnly className="input bg-slate-50 cursor-default" />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-slate-700 mb-1.5">Card number</label>
+        <input type="text" defaultValue="4242 4242 4242 4242" readOnly className="input bg-slate-50 font-mono cursor-default" />
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1.5">Expiry</label>
+          <input type="text" defaultValue="12 / 27" readOnly className="input bg-slate-50 cursor-default" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1.5">CVC</label>
+          <input type="text" defaultValue="•••" readOnly className="input bg-slate-50 cursor-default" />
+        </div>
+      </div>
+      {error && <p className="text-rose-600 text-sm">{error}</p>}
+      <button type="submit" disabled={paying} className="btn-primary w-full !py-3.5 text-base mt-2 disabled:opacity-60">
+        {paying ? (
+          <span className="flex items-center justify-center gap-2">
+            <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+            Processing…
+          </span>
+        ) : (
+          `Pay ${hourlyRate > 0 ? `$${hourlyRate.toFixed(2)}` : 'now'} & confirm booking`
+        )}
+      </button>
+      <p className="text-center text-xs text-slate-400">This is a simulated payment. No real charge will be made.</p>
+    </form>
+  );
+}
+
+// ── Stripe payment form ───────────────────────────────────────────────────────
+function StripeBookingForm({ bookingId, hourlyRate, clientSecret, onSuccess }) {
+  const handleSuccess = async (paymentIntentId) => {
+    await api.post('/payments/simulate-booking', { booking_id: Number(bookingId), payment_intent_id: paymentIntentId });
+    onSuccess();
+  };
+
+  return (
+    <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'stripe' } }}>
+      <StripeForm
+        onSuccess={handleSuccess}
+        label={`Pay ${hourlyRate > 0 ? `$${hourlyRate.toFixed(2)}` : 'now'} & confirm booking`}
+      />
+    </Elements>
+  );
+}
+
+// ── Main page ─────────────────────────────────────────────────────────────────
 export default function BookingCheckout() {
   const { bookingId } = useParams();
-  const navigate = useNavigate();
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [paying, setPaying] = useState(false);
+  const [clientSecret, setClientSecret] = useState(null);
   const [done, setDone] = useState(false);
   const [error, setError] = useState('');
 
@@ -22,21 +99,17 @@ export default function BookingCheckout() {
       .finally(() => setLoading(false));
   }, [bookingId]);
 
-  const handlePay = async (e) => {
-    e.preventDefault();
-    setPaying(true);
-    setError('');
-    try {
-      await api.post('/payments/simulate-booking', { booking_id: Number(bookingId) });
-      setDone(true);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Payment failed. Please try again.');
-    } finally {
-      setPaying(false);
-    }
-  };
+  // Create PaymentIntent when Stripe is configured and booking is loaded
+  useEffect(() => {
+    if (!STRIPE_KEY || !booking) return;
+    api
+      .post('/payments/create-intent', { type: 'booking', reference_id: Number(bookingId) })
+      .then(({ data }) => setClientSecret(data.clientSecret))
+      .catch((err) => setError(err.response?.data?.message || 'Could not initialize payment.'));
+  }, [booking, bookingId]);
 
   const hourlyRate = parseFloat(booking?.tutor?.tutorProfile?.hourly_rate || 0);
+  const isStripeMode = Boolean(STRIPE_KEY);
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
@@ -101,58 +174,31 @@ export default function BookingCheckout() {
 
               {/* Payment form */}
               <div className="card p-6">
-                <h2 className="font-display font-bold text-lg text-slate-900 mb-5">Payment details</h2>
-                <form onSubmit={handlePay} className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Cardholder name</label>
-                    <input
-                      type="text"
-                      defaultValue="Test User"
-                      readOnly
-                      className="input bg-slate-50 cursor-default"
+                <div className="flex items-center justify-between mb-5">
+                  <h2 className="font-display font-bold text-lg text-slate-900">Payment details</h2>
+                  {isStripeMode && (
+                    <span className="text-xs text-slate-400 font-medium">Powered by Stripe</span>
+                  )}
+                </div>
+
+                {isStripeMode ? (
+                  clientSecret ? (
+                    <StripeBookingForm
+                      bookingId={bookingId}
+                      hourlyRate={hourlyRate}
+                      clientSecret={clientSecret}
+                      onSuccess={() => setDone(true)}
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Card number</label>
-                    <input
-                      type="text"
-                      defaultValue="4242 4242 4242 4242"
-                      readOnly
-                      className="input bg-slate-50 font-mono cursor-default"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1.5">Expiry</label>
-                      <input type="text" defaultValue="12 / 27" readOnly className="input bg-slate-50 cursor-default" />
+                  ) : error ? (
+                    <p className="text-rose-600 text-sm">{error}</p>
+                  ) : (
+                    <div className="h-24 flex items-center justify-center">
+                      <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1.5">CVC</label>
-                      <input type="text" defaultValue="•••" readOnly className="input bg-slate-50 cursor-default" />
-                    </div>
-                  </div>
-
-                  {error && <p className="text-rose-600 text-sm">{error}</p>}
-
-                  <button
-                    type="submit"
-                    disabled={paying}
-                    className="btn-primary w-full !py-3.5 text-base mt-2 disabled:opacity-60"
-                  >
-                    {paying ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                        Processing…
-                      </span>
-                    ) : (
-                      `Pay ${hourlyRate > 0 ? `$${hourlyRate.toFixed(2)}` : 'now'} & confirm booking`
-                    )}
-                  </button>
-
-                  <p className="text-center text-xs text-slate-400">
-                    This is a simulated payment. No real charge will be made.
-                  </p>
-                </form>
+                  )
+                ) : (
+                  <LegacyForm bookingId={bookingId} hourlyRate={hourlyRate} onSuccess={() => setDone(true)} />
+                )}
               </div>
             </>
           )}

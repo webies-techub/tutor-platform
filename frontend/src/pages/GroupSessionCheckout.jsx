@@ -1,17 +1,129 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import api from '../api/axios';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import StripeForm from '../components/StripeForm';
+
+const STRIPE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+const stripePromise = STRIPE_KEY ? loadStripe(STRIPE_KEY) : null;
 
 const fmtDate = (d) =>
   new Date(d).toLocaleString('en-AU', { dateStyle: 'full', timeStyle: 'short' });
 
+// ── Stripe paid form ──────────────────────────────────────────────────────────
+function StripePaidForm({ sessionId, price, clientSecret, onSuccess }) {
+  const handleSuccess = async (paymentIntentId) => {
+    await api.post(`/group-sessions/${sessionId}/register`, { payment_intent_id: paymentIntentId });
+    onSuccess();
+  };
+  return (
+    <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'stripe' } }}>
+      <StripeForm onSuccess={handleSuccess} label={`Pay $${price.toFixed(2)} & reserve seat`} />
+    </Elements>
+  );
+}
+
+// ── Legacy paid form ──────────────────────────────────────────────────────────
+function LegacyPaidForm({ sessionId, price, onSuccess }) {
+  const [paying, setPaying] = useState(false);
+  const [error, setError] = useState('');
+
+  const handlePay = async (e) => {
+    e.preventDefault();
+    setPaying(true);
+    setError('');
+    try {
+      await api.post(`/group-sessions/${sessionId}/register`);
+      onSuccess();
+    } catch (err) {
+      if (err.response?.status === 409 && err.response.data.message?.toLowerCase().includes('already')) {
+        onSuccess();
+      } else {
+        setError(err.response?.data?.message || 'Registration failed.');
+        setPaying(false);
+      }
+    }
+  };
+
+  return (
+    <form onSubmit={handlePay} className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-slate-700 mb-1.5">Cardholder name</label>
+        <input type="text" defaultValue="Test User" readOnly className="input bg-slate-50 cursor-default" />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-slate-700 mb-1.5">Card number</label>
+        <input type="text" defaultValue="4242 4242 4242 4242" readOnly className="input bg-slate-50 font-mono cursor-default" />
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1.5">Expiry</label>
+          <input type="text" defaultValue="12 / 27" readOnly className="input bg-slate-50 cursor-default" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1.5">CVC</label>
+          <input type="text" defaultValue="•••" readOnly className="input bg-slate-50 cursor-default" />
+        </div>
+      </div>
+      {error && <p className="text-rose-600 text-sm">{error}</p>}
+      <button type="submit" disabled={paying} className="btn-primary w-full !py-3.5 text-base disabled:opacity-60">
+        {paying ? (
+          <span className="flex items-center justify-center gap-2">
+            <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+            Processing…
+          </span>
+        ) : `Pay $${price.toFixed(2)} & reserve seat`}
+      </button>
+      <p className="text-center text-xs text-slate-400">This is a simulated payment. No real charge will be made.</p>
+    </form>
+  );
+}
+
+// ── Free registration form ────────────────────────────────────────────────────
+function FreeForm({ sessionId, onSuccess }) {
+  const [paying, setPaying] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setPaying(true);
+    setError('');
+    try {
+      await api.post(`/group-sessions/${sessionId}/register`);
+      onSuccess();
+    } catch (err) {
+      if (err.response?.status === 409 && err.response.data.message?.toLowerCase().includes('already')) {
+        onSuccess();
+      } else {
+        setError(err.response?.data?.message || 'Registration failed.');
+        setPaying(false);
+      }
+    }
+  };
+
+  return (
+    <form onSubmit={handleRegister} className="space-y-4">
+      {error && <p className="text-rose-600 text-sm">{error}</p>}
+      <button type="submit" disabled={paying} className="btn-primary w-full !py-3.5 text-base disabled:opacity-60">
+        {paying ? (
+          <span className="flex items-center justify-center gap-2">
+            <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+            Reserving…
+          </span>
+        ) : 'Reserve my seat — free'}
+      </button>
+    </form>
+  );
+}
+
+// ── Main page ─────────────────────────────────────────────────────────────────
 export default function GroupSessionCheckout() {
   const { sessionId } = useParams();
-  const navigate = useNavigate();
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [paying, setPaying] = useState(false);
+  const [clientSecret, setClientSecret] = useState(null);
   const [done, setDone] = useState(false);
   const [error, setError] = useState('');
 
@@ -21,36 +133,27 @@ export default function GroupSessionCheckout() {
       api.get(`/group-sessions/${sessionId}/check`),
     ])
       .then(([{ data: sess }, { data: check }]) => {
-        if (check.registered) {
-          setDone(true);
-        }
+        if (check.registered) setDone(true);
         setSession(sess);
       })
       .catch(() => setError('Session not found.'))
       .finally(() => setLoading(false));
   }, [sessionId]);
 
-  const handlePay = async (e) => {
-    e.preventDefault();
-    setPaying(true);
-    setError('');
-    try {
-      await api.post(`/group-sessions/${sessionId}/register`);
-      setDone(true);
-    } catch (err) {
-      if (err.response?.status === 409) {
-        setError(err.response.data.message);
-        if (err.response.data.message?.toLowerCase().includes('already')) setDone(true);
-      } else {
-        setError(err.response?.data?.message || 'Registration failed. Please try again.');
-      }
-    } finally {
-      setPaying(false);
-    }
-  };
+  // Create PaymentIntent for paid sessions when Stripe is configured
+  useEffect(() => {
+    const price = parseFloat(session?.price || 0);
+    if (!STRIPE_KEY || !session || price <= 0 || done) return;
+    api
+      .post('/payments/create-intent', { type: 'group', reference_id: Number(sessionId) })
+      .then(({ data }) => setClientSecret(data.clientSecret))
+      .catch((err) => setError(err.response?.data?.message || 'Could not initialize payment.'));
+  }, [session, sessionId, done]);
 
   const price = parseFloat(session?.price || 0);
   const seatsLeft = session ? session.capacity - session.seats_taken : 0;
+  const isStripeMode = Boolean(STRIPE_KEY);
+  const isPaid = price > 0;
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
@@ -122,7 +225,7 @@ export default function GroupSessionCheckout() {
                   <div className="border-t border-slate-100 pt-3 flex justify-between">
                     <span className="font-semibold text-slate-700">Total</span>
                     <span className="font-display font-extrabold text-xl text-slate-900">
-                      {price > 0 ? `$${price.toFixed(2)}` : 'Free'}
+                      {isPaid ? `$${price.toFixed(2)}` : 'Free'}
                     </span>
                   </div>
                 </div>
@@ -135,60 +238,38 @@ export default function GroupSessionCheckout() {
                   <Link to="/group-classes" className="btn-primary">Browse other classes</Link>
                 </div>
               ) : (
-                /* Payment form */
                 <div className="card p-6">
-                  <h2 className="font-display font-bold text-lg text-slate-900 mb-5">
-                    {price > 0 ? 'Payment details' : 'Confirm registration'}
-                  </h2>
-                  <form onSubmit={handlePay} className="space-y-4">
-                    {price > 0 && (
-                      <>
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Cardholder name</label>
-                          <input type="text" defaultValue="Test User" readOnly className="input bg-slate-50 cursor-default" />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1.5">Card number</label>
-                          <input type="text" defaultValue="4242 4242 4242 4242" readOnly className="input bg-slate-50 font-mono cursor-default" />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Expiry</label>
-                            <input type="text" defaultValue="12 / 27" readOnly className="input bg-slate-50 cursor-default" />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">CVC</label>
-                            <input type="text" defaultValue="•••" readOnly className="input bg-slate-50 cursor-default" />
-                          </div>
-                        </div>
-                      </>
+                  <div className="flex items-center justify-between mb-5">
+                    <h2 className="font-display font-bold text-lg text-slate-900">
+                      {isPaid ? 'Payment details' : 'Confirm registration'}
+                    </h2>
+                    {isStripeMode && isPaid && (
+                      <span className="text-xs text-slate-400 font-medium">Powered by Stripe</span>
                     )}
+                  </div>
 
-                    {error && <p className="text-rose-600 text-sm">{error}</p>}
-
-                    <button
-                      type="submit"
-                      disabled={paying}
-                      className="btn-primary w-full !py-3.5 text-base disabled:opacity-60"
-                    >
-                      {paying ? (
-                        <span className="flex items-center justify-center gap-2">
-                          <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                          Processing…
-                        </span>
-                      ) : price > 0 ? (
-                        `Pay $${price.toFixed(2)} & reserve seat`
+                  {isPaid ? (
+                    isStripeMode ? (
+                      clientSecret ? (
+                        <StripePaidForm
+                          sessionId={sessionId}
+                          price={price}
+                          clientSecret={clientSecret}
+                          onSuccess={() => setDone(true)}
+                        />
+                      ) : error ? (
+                        <p className="text-rose-600 text-sm">{error}</p>
                       ) : (
-                        'Reserve my seat — free'
-                      )}
-                    </button>
-
-                    {price > 0 && (
-                      <p className="text-center text-xs text-slate-400">
-                        This is a simulated payment. No real charge will be made.
-                      </p>
-                    )}
-                  </form>
+                        <div className="h-24 flex items-center justify-center">
+                          <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+                        </div>
+                      )
+                    ) : (
+                      <LegacyPaidForm sessionId={sessionId} price={price} onSuccess={() => setDone(true)} />
+                    )
+                  ) : (
+                    <FreeForm sessionId={sessionId} onSuccess={() => setDone(true)} />
+                  )}
                 </div>
               )}
             </>
