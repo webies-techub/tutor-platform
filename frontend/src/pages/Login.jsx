@@ -33,12 +33,12 @@ export default function Login() {
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       {/* Left panel — brand */}
-      <div className="hidden lg:flex flex-col justify-between bg-slate-950 p-12 relative overflow-hidden">
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-blue-600/25 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-80 h-80 bg-sky-500/20 rounded-full blur-3xl" />
+      <div className="hidden lg:flex flex-col justify-between bg-navy-950 p-12 relative overflow-hidden">
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-navy-600/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-80 h-80 bg-gold-500/20 rounded-full blur-3xl" />
 
         <Link to="/" className="relative flex items-center">
-          <img src="/learnHubLogo.png" alt="LearnHub" className="h-12 w-auto brightness-0 invert" />
+          <img src="/edu-spire-logo.png" alt="TheEduSpire" className="h-14 w-auto brightness-0 invert" />
         </Link>
 
         <div className="relative">
@@ -46,7 +46,7 @@ export default function Login() {
             "The video courses are brilliant and my tutor genuinely cares about my progress. Best decision I made this year."
           </blockquote>
           <div className="flex items-center gap-3 mt-6">
-            <span className="w-11 h-11 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold">S</span>
+            <span className="w-11 h-11 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-navy-900 font-bold">S</span>
             <div>
               <p className="text-white font-semibold text-sm">Sarah K.</p>
               <p className="text-slate-400 text-sm">Year 12 student</p>
@@ -54,14 +54,14 @@ export default function Login() {
           </div>
         </div>
 
-        <p className="relative text-slate-500 text-sm">&copy; {new Date().getFullYear()} LearnHub</p>
+        <p className="relative text-slate-500 text-sm">&copy; {new Date().getFullYear()} TheEduSpire</p>
       </div>
 
       {/* Right panel — form */}
       <div className="flex items-center justify-center px-4 py-12 bg-white">
         <div className="w-full max-w-sm">
           <Link to="/" className="lg:hidden flex items-center mb-10">
-            <img src="/learnHubLogo.png" alt="LearnHub" className="h-11 w-auto" />
+            <img src="/edu-spire-logo.png" alt="TheEduSpire" className="h-12 w-auto" />
           </Link>
 
           <h1 className="text-3xl font-bold tracking-tight mb-2">Welcome back</h1>
@@ -100,7 +100,7 @@ export default function Login() {
 
           <p className="text-center text-sm text-slate-500 mt-8">
             Don't have an account?{' '}
-            <Link to="/register" className="text-blue-600 font-semibold hover:underline">Sign up free</Link>
+            <Link to="/register" className="text-navy-800 font-semibold hover:underline">Sign up free</Link>
           </p>
         </div>
       </div>

@@ -32,7 +32,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
           <div className="col-span-2">
             <div className="mb-4">
-              <img src="/learnHubLogo.png" alt="LearnHub" className="h-12 w-auto" />
+              <img src="/edu-spire-logo.png" alt="TheEduSpire" className="h-14 w-auto" />
             </div>
             <p className="text-sm leading-relaxed max-w-xs text-slate-500">
               The online learning platform connecting students with expert tutors through
@@ -45,7 +45,7 @@ export default function Footer() {
               <ul className="space-y-3">
                 {col.links.map((l) => (
                   <li key={l.label}>
-                    <Link to={l.to} className="text-sm text-slate-500 hover:text-blue-700 transition-colors">
+                    <Link to={l.to} className="text-sm text-slate-500 hover:text-navy-800 transition-colors">
                       {l.label}
                     </Link>
                   </li>
@@ -55,7 +55,7 @@ export default function Footer() {
           ))}
         </div>
         <div className="mt-12 pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-400">
-          <p>&copy; {new Date().getFullYear()} LearnHub. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} TheEduSpire. All rights reserved.</p>
           <p>Made with care for learners everywhere.</p>
         </div>
       </div>

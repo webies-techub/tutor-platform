@@ -48,7 +48,7 @@ export default function DashboardLayout({ title, subtitle, children }) {
       <aside className="hidden lg:flex w-64 flex-col bg-white border-r border-slate-200 fixed inset-y-0">
         <div className="h-[4.5rem] flex items-center px-6 border-b border-slate-100">
           <Link to="/" className="flex items-center">
-            <img src="/learnHubLogo.png" alt="LearnHub" className="h-11 w-auto" />
+            <img src="/edu-spire-logo.png" alt="TheEduSpire" className="h-12 w-auto" />
           </Link>
         </div>
 
@@ -60,7 +60,7 @@ export default function DashboardLayout({ title, subtitle, children }) {
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-150 ${
                   isActive
-                    ? 'bg-blue-50 text-blue-700 shadow-sm ring-1 ring-blue-100'
+                    ? 'bg-navy-50 text-navy-800 shadow-sm ring-1 ring-navy-100'
                     : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                 }`
               }
@@ -73,7 +73,7 @@ export default function DashboardLayout({ title, subtitle, children }) {
 
         <div className="p-4 border-t border-slate-100">
           <div className="flex items-center gap-3 px-2">
-            <span className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-sky-600 flex items-center justify-center text-white font-bold">
+            <span className="w-10 h-10 rounded-full bg-gradient-to-br from-navy-700 to-navy-900 ring-1 ring-gold-400/40 flex items-center justify-center text-white font-bold">
               {user?.name?.[0]?.toUpperCase()}
             </span>
             <div className="min-w-0 flex-1">
@@ -93,7 +93,7 @@ export default function DashboardLayout({ title, subtitle, children }) {
       <div className="lg:hidden fixed top-0 inset-x-0 z-40 bg-white/90 backdrop-blur border-b border-slate-200">
         <div className="flex items-center justify-between px-4 h-16">
           <Link to="/" className="flex items-center">
-            <img src="/learnHubLogo.png" alt="LearnHub" className="h-10 w-auto" />
+            <img src="/edu-spire-logo.png" alt="TheEduSpire" className="h-11 w-auto" />
           </Link>
           <div className="flex gap-1">
             {items.map((item) => (
@@ -101,7 +101,7 @@ export default function DashboardLayout({ title, subtitle, children }) {
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) =>
-                  `p-2.5 rounded-lg ${isActive ? 'bg-blue-50 text-blue-700' : 'text-slate-400'}`
+                  `p-2.5 rounded-lg ${isActive ? 'bg-navy-50 text-navy-800' : 'text-slate-400'}`
                 }
               >
                 <Icon d={item.icon} />

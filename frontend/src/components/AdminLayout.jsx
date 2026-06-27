@@ -27,7 +27,7 @@ export default function AdminLayout({ children }) {
     <>
       <div className="p-6 border-b border-gray-700">
         <Link to="/admin/dashboard" onClick={onNavigate} className="flex items-center">
-          <img src="/learnHubLogo.png" alt="LearnHub" className="h-10 w-auto brightness-0 invert" />
+          <img src="/edu-spire-logo.png" alt="TheEduSpire" className="h-11 w-auto brightness-0 invert" />
         </Link>
         <p className="text-gray-400 text-xs mt-1">Admin Panel</p>
       </div>
@@ -39,7 +39,7 @@ export default function AdminLayout({ children }) {
             onClick={onNavigate}
             className={`block px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
               location.pathname === item.path
-                ? 'bg-sky-600 text-white'
+                ? 'bg-gold-500 text-navy-900'
                 : 'text-gray-300 hover:bg-gray-800 hover:text-white'
             }`}
           >
@@ -68,7 +68,7 @@ export default function AdminLayout({ children }) {
       {/* Mobile top bar */}
       <header className="lg:hidden fixed top-0 inset-x-0 z-40 bg-gray-900 text-white flex items-center justify-between px-4 h-14">
         <Link to="/admin/dashboard" className="flex items-center">
-          <img src="/learnHubLogo.png" alt="LearnHub" className="h-8 w-auto brightness-0 invert" />
+          <img src="/edu-spire-logo.png" alt="TheEduSpire" className="h-9 w-auto brightness-0 invert" />
         </Link>
         <button
           onClick={() => setOpen(true)}

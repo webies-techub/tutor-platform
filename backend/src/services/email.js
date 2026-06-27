@@ -8,9 +8,9 @@ const transporter = nodemailer.createTransport({
 });
 
 const FRONTEND = process.env.FRONTEND_URL || 'http://localhost:5173';
-const BRAND = 'LearnHub';
-const PRIMARY = '#2563eb';
-const PRIMARY_DARK = '#1d4ed8';
+const BRAND = 'TheEduSpire';
+const PRIMARY = '#16233f';
+const PRIMARY_DARK = '#101a30';
 const INK = '#0f172a';
 const MUTED = '#64748b';
 const BORDER = '#e2e8f0';
@@ -283,7 +283,7 @@ const sendGroupRegistrationEmail = (student, session) =>
 const sendOtpEmail = (user, otp) =>
   sendEmail(
     user.email,
-    `Your LearnHub verification code: ${otp}`,
+    `Your ${BRAND} verification code: ${otp}`,
     layout({
       title: 'Verify your email',
       preheader: `Your verification code is ${otp}. It expires in 15 minutes.`,
@@ -291,9 +291,9 @@ const sendOtpEmail = (user, otp) =>
         heading('Verify your email address') +
         para(`Hi ${user.name.split(' ')[0]}, use the code below to verify your email address and activate your account.`) +
         `<div style="margin:24px 0;text-align:center;">
-           <span style="display:inline-block;background:#eff6ff;border:2px dashed #93c5fd;border-radius:16px;padding:20px 48px;font-size:40px;font-weight:800;letter-spacing:12px;color:#1d4ed8;font-family:'Courier New',monospace;">${otp}</span>
+           <span style="display:inline-block;background:#f4f6fb;border:2px dashed ${PRIMARY};border-radius:16px;padding:20px 48px;font-size:40px;font-weight:800;letter-spacing:12px;color:${PRIMARY};font-family:'Courier New',monospace;">${otp}</span>
          </div>` +
-        para('This code expires in <strong>15 minutes</strong>. If you didn\'t create a LearnHub account, you can safely ignore this email.'),
+        para(`This code expires in <strong>15 minutes</strong>. If you didn't create a ${BRAND} account, you can safely ignore this email.`),
     })
   );
 

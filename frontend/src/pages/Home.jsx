@@ -324,7 +324,7 @@ export default function Home() {
             <div className="text-center max-w-2xl mx-auto mb-14">
               <p className="eyebrow mb-3">Learn from the best</p>
               <h2 className="section-title">Meet our expert tutors</h2>
-              <p className="text-slate-500 mt-4 text-lg">Qualified, experienced and hand-picked. Every tutor is verified before they teach on LearnHub.</p>
+              <p className="text-slate-500 mt-4 text-lg">Qualified, experienced and hand-picked. Every tutor is verified before they teach on TheEduSpire.</p>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-7">
               {tutors.map((t) => <TutorCard key={t.id} profile={t} />)}
@@ -340,7 +340,7 @@ export default function Home() {
       <section className="py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <p className="eyebrow mb-3">Why LearnHub</p>
+            <p className="eyebrow mb-3">Why TheEduSpire</p>
             <h2 className="section-title">Built for serious learning</h2>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">

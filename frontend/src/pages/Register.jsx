@@ -25,12 +25,12 @@ export default function Register() {
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       {/* Left panel — brand */}
-      <div className="hidden lg:flex flex-col justify-between bg-slate-950 p-12 relative overflow-hidden">
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-blue-600/25 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-80 h-80 bg-sky-500/20 rounded-full blur-3xl" />
+      <div className="hidden lg:flex flex-col justify-between bg-navy-950 p-12 relative overflow-hidden">
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-navy-600/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-80 h-80 bg-gold-500/20 rounded-full blur-3xl" />
 
         <Link to="/" className="relative flex items-center">
-          <img src="/learnHubLogo.png" alt="LearnHub" className="h-12 w-auto brightness-0 invert" />
+          <img src="/edu-spire-logo.png" alt="TheEduSpire" className="h-14 w-auto brightness-0 invert" />
         </Link>
 
         <div className="relative">
@@ -40,8 +40,8 @@ export default function Register() {
           <ul className="space-y-4">
             {['On-demand HD video courses', 'Live 1-on-1 tutoring sessions', 'Verified expert tutors', 'No subscriptions — pay per course'].map((item) => (
               <li key={item} className="flex items-center gap-3 text-slate-300">
-                <span className="w-6 h-6 rounded-full bg-blue-600/30 ring-1 ring-blue-500/50 flex items-center justify-center flex-shrink-0">
-                  <svg className="w-3.5 h-3.5 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                <span className="w-6 h-6 rounded-full bg-gold-500/25 ring-1 ring-gold-400/50 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-3.5 h-3.5 text-gold-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 </span>
@@ -51,14 +51,14 @@ export default function Register() {
           </ul>
         </div>
 
-        <p className="relative text-slate-500 text-sm">&copy; {new Date().getFullYear()} LearnHub</p>
+        <p className="relative text-slate-500 text-sm">&copy; {new Date().getFullYear()} TheEduSpire</p>
       </div>
 
       {/* Right panel — form */}
       <div className="flex items-center justify-center px-4 py-12 bg-white">
         <div className="w-full max-w-sm">
           <Link to="/" className="lg:hidden flex items-center mb-10">
-            <img src="/learnHubLogo.png" alt="LearnHub" className="h-11 w-auto" />
+            <img src="/edu-spire-logo.png" alt="TheEduSpire" className="h-12 w-auto" />
           </Link>
 
           <h1 className="text-3xl font-bold tracking-tight mb-2">Create your account</h1>
@@ -112,11 +112,11 @@ export default function Register() {
                     onClick={() => setForm({ ...form, role: opt.value })}
                     className={`rounded-xl border-2 p-4 text-left transition-all duration-150 ${
                       form.role === opt.value
-                        ? 'border-blue-600 bg-blue-50 shadow-sm'
+                        ? 'border-navy-700 bg-navy-50 shadow-sm'
                         : 'border-slate-200 hover:border-slate-300'
                     }`}
                   >
-                    <p className={`font-display font-bold ${form.role === opt.value ? 'text-blue-700' : 'text-slate-900'}`}>
+                    <p className={`font-display font-bold ${form.role === opt.value ? 'text-navy-800' : 'text-slate-900'}`}>
                       {opt.label}
                     </p>
                     <p className="text-xs text-slate-400 mt-0.5">{opt.desc}</p>
@@ -134,7 +134,7 @@ export default function Register() {
 
           <p className="text-center text-sm text-slate-500 mt-8">
             Already have an account?{' '}
-            <Link to="/login" className="text-blue-600 font-semibold hover:underline">Log in</Link>
+            <Link to="/login" className="text-navy-800 font-semibold hover:underline">Log in</Link>
           </p>
         </div>
       </div>

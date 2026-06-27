@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 function Logo() {
   return (
     <Link to="/" className="flex items-center">
-      <img src="/learnHubLogo.png" alt="LearnHub" className="h-11 w-auto" />
+      <img src="/edu-spire-logo.png" alt="TheEduSpire" className="h-14 w-auto" />
     </Link>
   );
 }
@@ -35,7 +35,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-slate-100/80">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-[3.75rem]">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-[4.5rem]">
         <Logo />
 
         {/* Desktop links */}
@@ -45,7 +45,7 @@ export default function Navbar() {
               key={l.to}
               to={l.to}
               className={({ isActive }) =>
-                `text-sm font-medium transition-colors ${isActive ? 'text-blue-700 font-semibold' : 'text-slate-600 hover:text-slate-900'}`
+                `text-sm font-medium transition-colors ${isActive ? 'text-navy-800 font-semibold' : 'text-slate-600 hover:text-slate-900'}`
               }
             >
               {l.label}
@@ -63,7 +63,7 @@ export default function Navbar() {
                 </Link>
               )}
               <div className="flex items-center gap-2.5 pl-3 border-l border-slate-200">
-                <span className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-sky-600 flex items-center justify-center text-white text-xs font-bold">
+                <span className="w-8 h-8 rounded-full bg-gradient-to-br from-navy-700 to-navy-900 ring-1 ring-gold-400/40 flex items-center justify-center text-white text-xs font-bold">
                   {user.name?.[0]?.toUpperCase()}
                 </span>
                 <button onClick={handleLogout} className="text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">Log out</button>
@@ -72,7 +72,7 @@ export default function Navbar() {
           ) : (
             <>
               <Link to="/login" className="text-sm font-medium text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">Log in</Link>
-              <Link to="/register" className="bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-md shadow-blue-600/20 hover:bg-blue-700 transition-all">
+              <Link to="/register" className="bg-navy-800 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-md shadow-navy-800/25 hover:bg-navy-900 transition-all">
                 Get started
               </Link>
             </>
@@ -105,7 +105,7 @@ export default function Navbar() {
             {user ? (
               <>
                 {dashboardLink && (
-                  <Link to={dashboardLink} onClick={() => setMenuOpen(false)} className="block px-3 py-2.5 rounded-xl text-blue-700 font-semibold hover:bg-blue-50 transition-colors">
+                  <Link to={dashboardLink} onClick={() => setMenuOpen(false)} className="block px-3 py-2.5 rounded-xl text-navy-800 font-semibold hover:bg-navy-50 transition-colors">
                     Dashboard
                   </Link>
                 )}

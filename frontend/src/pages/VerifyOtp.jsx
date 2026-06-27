@@ -50,17 +50,15 @@ export default function VerifyOtp() {
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       {/* Left panel */}
-      <div className="hidden lg:flex flex-col justify-between bg-slate-950 p-12 relative overflow-hidden">
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-blue-600/25 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-80 h-80 bg-sky-500/20 rounded-full blur-3xl" />
-        <Link to="/" className="relative">
-          <span className="text-2xl font-display font-extrabold tracking-tight">
-            <span className="text-white">Learn</span><span className="text-sky-400">Hub</span>
-          </span>
+      <div className="hidden lg:flex flex-col justify-between bg-navy-950 p-12 relative overflow-hidden">
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-navy-600/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-80 h-80 bg-gold-500/20 rounded-full blur-3xl" />
+        <Link to="/" className="relative flex items-center">
+          <img src="/edu-spire-logo.png" alt="TheEduSpire" className="h-14 w-auto brightness-0 invert" />
         </Link>
         <div className="relative">
-          <div className="w-16 h-16 rounded-2xl bg-blue-600/20 ring-1 ring-blue-500/30 flex items-center justify-center mb-6">
-            <svg className="w-8 h-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+          <div className="w-16 h-16 rounded-2xl bg-gold-500/20 ring-1 ring-gold-400/40 flex items-center justify-center mb-6">
+            <svg className="w-8 h-8 text-gold-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
           </div>
@@ -69,20 +67,18 @@ export default function VerifyOtp() {
           </h2>
           <p className="text-slate-400 leading-relaxed">We sent a 6-digit code to your email. Enter it to activate your account and start learning.</p>
         </div>
-        <p className="relative text-slate-500 text-sm">&copy; {new Date().getFullYear()} LearnHub</p>
+        <p className="relative text-slate-500 text-sm">&copy; {new Date().getFullYear()} TheEduSpire</p>
       </div>
 
       {/* Right panel */}
       <div className="flex items-center justify-center px-4 py-12 bg-white">
         <div className="w-full max-w-sm">
-          <Link to="/" className="lg:hidden mb-10 inline-block">
-            <span className="text-xl font-display font-extrabold tracking-tight">
-              <span className="text-slate-900">Learn</span><span className="text-blue-600">Hub</span>
-            </span>
+          <Link to="/" className="lg:hidden mb-10 inline-flex items-center">
+            <img src="/edu-spire-logo.png" alt="TheEduSpire" className="h-12 w-auto" />
           </Link>
 
-          <div className="w-14 h-14 rounded-2xl bg-blue-50 ring-1 ring-blue-100 flex items-center justify-center mb-6">
-            <svg className="w-7 h-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+          <div className="w-14 h-14 rounded-2xl bg-navy-50 ring-1 ring-navy-100 flex items-center justify-center mb-6">
+            <svg className="w-7 h-7 text-navy-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
           </div>
@@ -126,7 +122,7 @@ export default function VerifyOtp() {
               <button
                 onClick={handleResend}
                 disabled={resending}
-                className="text-blue-600 font-semibold hover:underline disabled:opacity-50"
+                className="text-navy-800 font-semibold hover:underline disabled:opacity-50"
               >
                 {resending ? 'Sending...' : 'Resend code'}
               </button>
